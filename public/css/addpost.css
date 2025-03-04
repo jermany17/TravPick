@@ -6,9 +6,9 @@
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   display: flex;
-  flex-direction: column; /* 세로 배치 */
-  align-items: center; /* 가운데 정렬 */
-  gap: 15px; /* 요소 간 간격 */
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
 }
 
 .addpost-title {
@@ -18,49 +18,58 @@
 }
 
 .addpost-info {
-  font-size: 16px;
-  margin-bottom: 10px;
-  padding: 10px;
-  background-color: #f1f1f1;
-  border-radius: 5px;
+  width: 95%;
+  padding-top: 5px;
+  padding-bottom: 20px;
+  padding-right: 10px;
+  padding-left: 10px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  text-align: center;
 }
 
 .addpost-content {
-  min-height: 200px;
+  min-height: 400px;
+  max-height: 400px; 
+  width: 95%;
   border: 1px solid #ddd;
   padding: 10px;
   margin-bottom: 15px;
   border-radius: 5px;
   background-color: #fafafa;
+  white-space: pre-wrap;
+  text-align: left;
+  overflow-y: auto; 
 }
 
 .addpost-content:focus {
   outline: none;
-  border-color: #007bff;
+  border-color: #a5a8eb;;
 }
 
 .addpost-buttons {
   display: flex;
-  flex-direction: column; 
+  flex-direction: column;
   align-items: center;
   gap: 10px;
-  justify-content: flex-end;
-}
-
-.addpost-buttons input,
-.addpost-buttons button {
-    width: 200px;
 }
 
 .addpost-buttons button {
-  background-color: #007bff;
+  width: 200px;
+  background-color: #a5a8eb;;
   color: white;
   border: none;
   padding: 8px 12px;
   cursor: pointer;
   border-radius: 4px;
 }
-
 
 .addpost-buttons button:hover {
   background-color: #0056b3;

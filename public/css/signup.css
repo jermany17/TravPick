@@ -92,7 +92,7 @@
 /* 아이콘만 중앙 정렬 */
 .signup-box .material-symbols-outlined {
   align-self: center;
-  font-size: 80px;
+  font-size: 60px !important;
   color: #a5a8eb;
 }
 

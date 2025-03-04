@@ -6,17 +6,14 @@
     <h1 class="addpost-title">게시물 작성</h1>
 
     <div class="addpost-info">
-        <p><strong>국가:</strong> <%= countryName %></p>
-        <p><strong>카테고리:</strong> <%= postType %></p>
+        <p><%= countryName %><br><%= postType %></p>
     </div>
 
     <div id="postContent" class="addpost-content" contenteditable="true">
-        <p>여기에 게시물을 작성하세요...</p>
+        <p>여기에 게시물을 작성해보세요!</p>
     </div>
 
     <div class="addpost-buttons">
-        <input type="file" id="imageUpload" accept="image/*">
-        <button id="addImageButton">이미지 추가</button>
         <button id="submitPostButton">제출</button>
     </div>
 </main>
@@ -24,36 +21,133 @@
 <%- include("include/_footer") %>
 
 <script>
-document.getElementById("addImageButton").addEventListener("click", () => {
-    const fileInput = document.getElementById("imageUpload");
-    const files = fileInput.files;
+document.addEventListener("DOMContentLoaded", () => {
+    const postContent = document.getElementById("postContent");
+    const defaultText = "여기에 게시물을 작성해보세요!";
+
+    // 포커스 시 기본 문구 삭제
+    postContent.addEventListener("focus", () => {
+        if (postContent.innerText.trim() === defaultText) {
+            postContent.innerHTML = "";
+        }
+    });
+
+    // 포커스를 잃었을 때 내용이 없으면 기본 문구 복원
+    postContent.addEventListener("blur", () => {
+        // 실제 사용자 입력된 텍스트 가져오기
+        const text = postContent.innerText.replace(/\n/g, "").trim(); // 개행문자 제거 후 검사
+        
+        if (!text) {
+            postContent.innerHTML = `<p>${defaultText}</p>`;
+        }
+    });
     
-    if (files.length > 0) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            const img = document.createElement("img");
-            img.src = e.target.result;
-            img.classList.add("addpost-image");
+    // Ctrl + V로 이미지 붙여넣기
+    postContent.addEventListener("paste", (event) => {
+        const items = (event.clipboardData || event.originalEvent.clipboardData).items;
+        for (let item of items) {
+            if (item.type.startsWith("image")) {
+                const file = item.getAsFile();
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    insertImage(e.target.result);
+                };
+                reader.readAsDataURL(file);
+                event.preventDefault();
+            }
+        }
+    });
 
-            const postContent = document.getElementById("postContent");
-            postContent.appendChild(img);
-        };
-        reader.readAsDataURL(files[0]);
+    // 드래그 앤 드롭 이미지 업로드
+    postContent.addEventListener("dragover", (event) => {
+        event.preventDefault();
+        postContent.style.border = "2px dashed #007bff"; // 드래그 효과
+    });
+
+    postContent.addEventListener("dragleave", () => {
+        postContent.style.border = "1px solid #ddd";
+    });
+
+    postContent.addEventListener("drop", (event) => {
+        event.preventDefault();
+        postContent.style.border = "1px solid #ddd";
+
+        const files = event.dataTransfer.files;
+        for (let file of files) {
+            if (file.type.startsWith("image")) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    insertImage(e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    });
+
+    // 이미지 삽입 함수 (이미지 추가 시 크기 조절 기능 포함)
+    function insertImage(src) {
+        const imgWrapper = document.createElement("div");
+        imgWrapper.classList.add("resizable-image-wrapper");
+
+        const img = document.createElement("img");
+        img.src = src;
+        img.classList.add("addpost-image");
+
+        const resizer = document.createElement("div");
+        resizer.classList.add("resizer");
+
+        imgWrapper.appendChild(img);
+        imgWrapper.appendChild(resizer);
+        postContent.appendChild(imgWrapper);
+
+        makeImageResizable(imgWrapper, resizer);
     }
-});
 
-document.getElementById("submitPostButton").addEventListener("click", () => {
-    const country = "<%= countryName %>";
-    const type = "<%= postType %>";
-    const content = document.getElementById("postContent").innerHTML;
 
-    const postData = {
-        country: country,
-        type: type,
-        contents: content
-    };
+    // 이미지 크기 조절 기능
+    function makeImageResizable(imgWrapper, resizer) {
+        let isResizing = false;
 
-    console.log("게시물 데이터:", postData);
-    alert("제출 버튼을 눌렀습니다. (아직 저장되지 않습니다.)");
+        resizer.addEventListener("mousedown", (event) => {
+            event.preventDefault();
+            isResizing = true;
+
+            document.addEventListener("mousemove", resize);
+            document.addEventListener("mouseup", stopResize);
+        });
+
+        function resize(event) {
+            if (!isResizing) return;
+
+            const rect = imgWrapper.getBoundingClientRect();
+            const newWidth = event.clientX - rect.left;
+            const newHeight = event.clientY - rect.top;
+
+            imgWrapper.style.width = `${newWidth}px`;
+            imgWrapper.style.height = `${newHeight}px`;
+        }
+
+        function stopResize() {
+            isResizing = false;
+            document.removeEventListener("mousemove", resize);
+            document.removeEventListener("mouseup", stopResize);
+        }
+    }
+
+    // 게시글 데이터 제출
+    document.getElementById("submitPostButton").addEventListener("click", () => {
+        const country = "<%= countryName %>";
+        const type = "<%= postType %>";
+        const content = postContent.innerHTML;
+
+        const postData = {
+            country: country,
+            type: type,
+            contents: content
+        };
+
+        console.log("게시물 데이터:", postData);
+        alert("제출 버튼을 눌렀습니다. (아직 저장되지 않습니다.)");
+    });
 });
 </script>
