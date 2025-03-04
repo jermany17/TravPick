@@ -1,0 +1,29 @@
+<%- include("include/_header") %>
+
+<div class="signup-success-container">
+    <div class="signup-success-box">
+        <p class="signup-success-message">회원가입이<br>성공적으로<br>완료되었습니다!<br><br></p>
+        <button class="signup-login-button" onclick="location.href='/loginpage'">로그인</button>
+    </div>
+</div>
+
+<%- include("include/_footer") %>
+
+<script>
+    // 페이지 로드 시 로그인 상태 확인
+    async function checkLoginStatus() {
+        try {
+            const response = await fetch("/check-login");
+            const result = await response.json();
+
+            if (response.ok && result.isLoggedIn) {
+                // 로그인된 경우, 홈 또는 마이페이지로 리다이렉트
+                window.location.href = "/";
+            }
+        } catch (error) {
+            console.error("로그인 상태 확인 실패:", error);
+        }
+    }
+
+    checkLoginStatus();
+</script>

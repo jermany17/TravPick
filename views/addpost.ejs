@@ -1,0 +1,59 @@
+<%- include("include/_header") %>
+
+<link rel="stylesheet" href="/addpost.css">
+
+<main class="addpost-container">
+    <h1 class="addpost-title">게시물 작성</h1>
+
+    <div class="addpost-info">
+        <p><strong>국가:</strong> <%= countryName %></p>
+        <p><strong>카테고리:</strong> <%= postType %></p>
+    </div>
+
+    <div id="postContent" class="addpost-content" contenteditable="true">
+        <p>여기에 게시물을 작성하세요...</p>
+    </div>
+
+    <div class="addpost-buttons">
+        <input type="file" id="imageUpload" accept="image/*">
+        <button id="addImageButton">이미지 추가</button>
+        <button id="submitPostButton">제출</button>
+    </div>
+</main>
+
+<%- include("include/_footer") %>
+
+<script>
+document.getElementById("addImageButton").addEventListener("click", () => {
+    const fileInput = document.getElementById("imageUpload");
+    const files = fileInput.files;
+    
+    if (files.length > 0) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const img = document.createElement("img");
+            img.src = e.target.result;
+            img.classList.add("addpost-image");
+
+            const postContent = document.getElementById("postContent");
+            postContent.appendChild(img);
+        };
+        reader.readAsDataURL(files[0]);
+    }
+});
+
+document.getElementById("submitPostButton").addEventListener("click", () => {
+    const country = "<%= countryName %>";
+    const type = "<%= postType %>";
+    const content = document.getElementById("postContent").innerHTML;
+
+    const postData = {
+        country: country,
+        type: type,
+        contents: content
+    };
+
+    console.log("게시물 데이터:", postData);
+    alert("제출 버튼을 눌렀습니다. (아직 저장되지 않습니다.)");
+});
+</script>

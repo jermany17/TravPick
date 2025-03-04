@@ -1,0 +1,46 @@
+/* 회원가입 성공 페이지 스타일 */
+.signup-success-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #a5a8eb;
+}
+
+.signup-success-box {
+  background: white;
+  padding: 40px;
+  border-radius: 10px;
+  text-align: center;
+  width: 350px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.signup-success-message {
+  font-size: 25px;
+  color: #a5a8eb;
+  font-weight: bold;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  text-align: left; 
+}
+
+.signup-login-button {
+  width: 60%;
+  padding: 10px;
+  border-radius: 20px;
+  border: none;
+  background-color: #a5a8eb;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.signup-login-button:hover {
+  background-color: #878bde;
+}

@@ -1,0 +1,151 @@
+<%- include("include/_header") %>
+
+<!-- Google Material Symbols 아이콘 불러오기 -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+<div class="signup-container">
+    <div class="signup-box">
+        <!-- 사용자 아이콘 -->
+        <span class="material-symbols-outlined">account_circle</span>
+
+        <!-- 이름/닉네임 입력 -->
+        <input type="text" id="nickName" class="signup-input" placeholder="이름 혹은 닉네임">
+
+        <!-- 아이디 입력 & 중복 확인 -->
+        <div class="signup-input-group">
+            <input type="text" id="userId" class="signup-input" placeholder="아이디">
+            <button class="signup-check-button" onclick="checkUserId()">중복 확인</button>
+        </div>
+        <p id="userIdMessage" class="signup-error-message"></p>
+
+        <!-- 비밀번호 입력 -->
+        <input type="password" id="userPassword" class="signup-input" placeholder="비밀번호">
+
+        <!-- 비밀번호 확인 & 일치 확인 -->
+        <div class="signup-input-group">
+            <input type="password" id="confirmPassword" class="signup-input" placeholder="비밀번호 확인">
+            <button class="signup-check-button" onclick="checkPasswordMatch()">일치 확인</button>
+        </div>
+        <p id="passwordMessage" class="signup-error-message"></p>
+
+        <!-- 회원가입 버튼 -->
+        <button class="signup-submit-button" onclick="signup()" disabled>회원가입 완료</button>
+    </div>
+</div>
+
+<script>
+    let isUserIdValid = false;
+    let isPasswordValid = false;
+
+    // 아이디 중복 확인
+    async function checkUserId() {
+        const userId = document.getElementById("userId").value;
+        const userIdMessage = document.getElementById("userIdMessage");
+
+        if (!userId) {
+            userIdMessage.innerText = "아이디를 입력해주세요.";
+            userIdMessage.style.display = "block";
+            isUserIdValid = false;
+            updateSignupButton();
+            return;
+        }
+
+        try {
+            const response = await fetch(`/check-userid?userId=${userId}`);
+            const result = await response.json();
+
+            if (!response.ok) {
+                userIdMessage.innerText = result.message; // "이미 사용 중인 아이디입니다."
+                userIdMessage.style.color = "red";
+                isUserIdValid = false;
+            } else {
+                userIdMessage.innerText = "사용 가능한 아이디입니다.";
+                userIdMessage.style.color = "green";
+                isUserIdValid = true;
+            }
+
+            userIdMessage.style.display = "block";
+        } catch (error) {
+            console.error("아이디 중복 확인 실패:", error);
+        }
+
+        updateSignupButton();
+    }
+
+    // 비밀번호 일치 확인
+    function checkPasswordMatch() {
+        const password = document.getElementById("userPassword").value;
+        const confirmPassword = document.getElementById("confirmPassword").value;
+        const passwordMessage = document.getElementById("passwordMessage");
+
+        if (!password || !confirmPassword) {
+            passwordMessage.innerText = "비밀번호를 입력해주세요.";
+            passwordMessage.style.color = "red";
+            passwordMessage.style.display = "block";
+            isPasswordValid = false;
+        } else if (password !== confirmPassword) {
+            passwordMessage.innerText = "비밀번호가 일치하지 않습니다.";
+            passwordMessage.style.color = "red";
+            isPasswordValid = false;
+        } else {
+            passwordMessage.innerText = "비밀번호가 일치합니다.";
+            passwordMessage.style.color = "green";
+            isPasswordValid = true;
+        }
+
+        passwordMessage.style.display = "block";
+        updateSignupButton();
+    }
+
+    // 회원가입 버튼 활성화 여부 업데이트
+    function updateSignupButton() {
+        const signupButton = document.querySelector(".signup-submit-button");
+        signupButton.disabled = !(isUserIdValid && isPasswordValid);
+    }
+
+    // 회원가입 요청
+    async function signup() {
+        const nickName = document.getElementById("nickName").value;
+        const userId = document.getElementById("userId").value;
+        const userPassword = document.getElementById("userPassword").value;
+
+        try {
+            const response = await fetch("/signup", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ nickName, userId, userPassword })
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                window.location.href = "/signuppage2"; // 회원가입 성공 시 화면 이동
+            } else {
+                alert(result.message); // 회원가입 실패
+            }
+        } catch (error) {
+            alert("회원가입 요청 중 오류가 발생했습니다."); // 회원가입 실패
+        }
+    }
+
+    // 페이지 로드 시 로그인 상태 확인
+    async function checkLoginStatus() {
+        try {
+            const response = await fetch("/check-login");
+            const result = await response.json();
+
+            if (response.ok && result.isLoggedIn) {
+                // 로그인된 경우, 홈 또는 마이페이지로 리다이렉트
+                window.location.href = "/";
+            }
+        } catch (error) {
+            console.error("로그인 상태 확인 실패:", error);
+        }
+    }
+
+    checkLoginStatus();
+</script>
+
+<%- include("include/_footer") %>

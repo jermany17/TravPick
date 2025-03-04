@@ -1,0 +1,83 @@
+<%- include("include/_header") %>
+
+<!-- Google Material Symbols 아이콘 불러오기 -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+<main>
+    <div class="mypages-container">
+        <span class="material-symbols-outlined mypages-profile-icon">account_circle</span>
+
+        <div class="mypages-info-box">
+            <div class="mypages-info">
+                <div class="mypages-info-item">
+                    <span class="mypages-label">이름</span>
+                    <span id="mypagesUserName"></span>
+                </div>
+                <div class="mypages-info-item">
+                    <span class="mypages-label">아이디</span>
+                    <span id="mypagesUserId"></span>
+                </div>
+                <div class="mypages-info-item">
+                    <span class="mypages-label">비밀번호</span>
+                    <div class="mypages-password-group">
+                        <span class="material-symbols-outlined mypages-lock-icon">lock</span>
+                        <button class="mypages-password-button" onclick="location.href='/updatepasswordpage'">비밀번호 변경</button>
+                    </div>
+                </div>
+                <div class="mypages-info-item">
+                    <span class="mypages-label">생성 일자</span>
+                    <span id="mypagesCreateAt"></span>
+                </div>
+                <div class="mypages-info-item">
+                    <span class="mypages-label">수정 일자</span>
+                    <span id="mypagesUpdateAt"></span>
+                </div>
+            </div>
+        </div>
+
+        <button class="mypages-delete-button" onclick="deleteAccount()">회원 탈퇴</button>
+    </div>
+</main>
+
+<%- include("include/_footer") %>
+
+<script>
+    async function fetchUserInfo() {
+        try {
+            const response = await fetch("/userinfo");
+            if (!response.ok) throw new Error("사용자 정보를 가져올 수 없음");
+
+            const result = await response.json();
+            document.getElementById("mypagesUserName").innerText = result.nickName;
+            document.getElementById("mypagesUserId").innerText = result.userId;
+            document.getElementById("mypagesCreateAt").innerText = formatDate(result.createAt);
+            document.getElementById("mypagesUpdateAt").innerText = formatDate(result.updateAt);
+        } catch (error) {
+            console.error("사용자 정보 불러오기 실패:", error);
+        }
+    }
+
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return `${date.getFullYear()}.${date.getMonth() + 1}.${date.getDate()}`;
+    }
+
+    async function deleteAccount() {
+        if (!confirm("정말로 회원 탈퇴를 진행하시겠습니까?")) return;
+
+        try {
+            const response = await fetch("/delete-account", { method: "DELETE" });
+            if (response.ok) {
+                alert("회원 탈퇴가 완료되었습니다.");
+                window.location.href = "/";
+            } else {
+                alert("회원 탈퇴에 실패했습니다. 다시 시도해주세요.");
+            }
+        } catch (error) {
+            console.error("회원 탈퇴 실패:", error);
+            alert("오류가 발생했습니다. 다시 시도해주세요.");
+        }
+    }
+
+    fetchUserInfo();
+</script>

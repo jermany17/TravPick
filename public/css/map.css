@@ -1,0 +1,6 @@
+/* 지도 전체 스타일 */
+#chartdiv {
+  width: 65%;  /* 부모 요소(main)의 70% */
+  height: 70vh; /* 화면 높이의 60% */
+  max-height: 600px;
+}

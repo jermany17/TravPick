@@ -1,0 +1,122 @@
+/* 내 정보 페이지 제목 */
+.mypages-title {
+  font-size: 28px;
+  color: #a5a8eb;
+  text-align: left;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+/* 메인 컨테이너 */
+.mypages-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 2px solid #a5a8eb;
+  border-radius: 10px;
+  padding: 30px;
+  width: 450px;
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* 프로필 아이콘 */
+.mypages-profile-icon {
+  font-size: 60px !important;
+  color: #a5a8eb;
+  margin-bottom: 20px;
+}
+
+/* 사용자 정보 그룹을 감싸는 박스 */
+.mypages-info-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+/* 사용자 정보 그룹 */
+.mypages-info {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: flex-start; /* 내부 요소를 왼쪽 정렬 */
+  padding-left: 20px;
+}
+
+/* 개별 정보 항목 */
+.mypages-info-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  font-size: 16px;
+  color: #6c6fbf;
+  gap: 20px;
+}
+
+/* 라벨 스타일 */
+.mypages-label {
+  padding: 6px 12px;
+  border: 1px solid #a5a8eb;
+  border-radius: 15px;
+  color: #a5a8eb;
+  text-align: center;
+  min-width: 100px;
+}
+
+/* 비밀번호 변경 영역 */
+.mypages-password-group {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 85px;
+}
+
+/* 비밀번호 아이콘 */
+.mypages-lock-icon {
+  margin-top: 15px;
+  font-size: 35px !important;
+  color: #a5a8eb;
+  margin-left: 57px;
+}
+
+/* 비밀번호 변경 버튼 */
+.mypages-password-button {
+  padding: 10px 12px;
+  border: none;
+  border-radius: 5px;
+  background-color: #a5a8eb;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.mypages-password-button:hover {
+  background-color: #8a8ede;
+}
+
+/* 회원 탈퇴 버튼 */
+.mypages-delete-button {
+  margin-top: 30px;
+  padding: 10px 12px;
+  border: none;
+  border-radius: 5px;
+  background-color: #a5a8eb;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  width: 120px;
+}
+
+.mypages-delete-button:hover {
+  background-color: #8a8ede;
+}
+
+.mypages-info-item span:last-child {
+  text-align: left;
+  flex-grow: 1;
+  padding-left: 40px; /* 값을 왼쪽으로 밀어 정렬 */
+}

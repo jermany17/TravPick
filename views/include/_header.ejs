@@ -1,0 +1,76 @@
+<head>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/login.css">
+  <link rel="stylesheet" href="/css/signup.css">
+  <link rel="stylesheet" href="/css/signup2.css">
+  <link rel="stylesheet" href="/css/mypage.css">
+  <link rel="stylesheet" href="/css/updatepasswordpage.css">
+  <link rel="stylesheet" href="/css/map.css">
+  <link rel="stylesheet" href="/css/countrypage.css">
+  <link rel="stylesheet" href="/css/addpost.css">
+
+  <!-- Google Material Symbols 아이콘 불러오기 -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+<header>
+  <nav>
+      <a href="/">TravPick</a>
+      <a href="/loginpage" id="authButton" class="header-login">로그인</a>
+  </nav>
+</header>
+
+<script>
+  async function checkLoginStatus() {
+      try {
+          const response = await fetch("/check-login");
+          const result = await response.json();
+          const authButton = document.getElementById("authButton");
+
+          if (response.ok && result.isLoggedIn) {
+              // 로그인된 경우 → 로그아웃 버튼 표시
+              authButton.innerText = "로그아웃";
+              authButton.href = "javascript:void(0);"; // 기본 링크 제거
+              authButton.onclick = () => {
+                    // 로그아웃 직전 페이지 저장
+                    const currentPage = window.location.href;
+
+                    // 로그아웃하기 직전 경로에 "/countrypage/"가 포함되어 있으면 저장
+                    if (currentPage.includes("/countrypage/")) {
+                        sessionStorage.setItem("logoutPreviousPage", currentPage);
+                    } else {
+                        sessionStorage.removeItem("logoutPreviousPage"); // 필요 없으면 삭제
+                    }
+
+                    logout(); // 로그아웃 실행
+              };
+          } else {
+              // 로그인되지 않은 경우 → 로그인 버튼 유지
+              authButton.innerText = "로그인";
+              authButton.href = "/loginpage";
+              authButton.onclick = null;
+          }
+      } catch (error) {
+          console.error("로그인 상태 확인 실패:", error);
+      }
+  }
+
+  async function logout() {
+      try {
+          const response = await fetch("/logout", { method: "POST" });
+          if (response.ok) {
+              // 로그아웃 후 저장된 페이지로 이동 ("/countrypage/" 포함된 경우에만)
+            const previousPage = sessionStorage.getItem("logoutPreviousPage");
+
+            if (previousPage && previousPage.includes("/countrypage/")) {
+                window.location.href = previousPage; // 로그아웃 직전 경로로 리다이렉트
+            } else {
+                window.location.href = "/"; // 기본적으로 홈으로 이동
+            }
+          }
+      } catch (error) {
+          console.error("로그아웃 실패:", error);
+      }
+  }
+
+  checkLoginStatus(); // 페이지 로드 시 로그인 상태 확인
+</script>

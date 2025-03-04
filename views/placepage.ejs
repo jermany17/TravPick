@@ -1,0 +1,69 @@
+<%- include("include/_header") %>
+
+<main class="countrypage-container">
+    <h1 class="countrypage-title"><%= countryName %></h1>
+
+    <div id="countryMessage" class="countrypage-content">
+        <p> 가볼 만한 곳 정보를 공유하려면 로그인하세요!</p>
+    </div>
+</main>
+
+<%- include("include/_footer") %>
+
+<script>
+  async function checkLoginStatus() {
+      try {
+          const response = await fetch("/check-login");
+          const result = await response.json();
+          const countryMessage = document.getElementById("countryMessage");
+
+          if (response.ok && result.isLoggedIn) {
+              // 로그인된 경우 → 문구 변경 + 버튼 추가
+              countryMessage.innerHTML = "<p>가볼 만한 곳 정보를 공유해보세요!</p>";
+
+              const addPostButton = document.createElement("button");
+              addPostButton.id = "addPostButton";
+              addPostButton.className = "countrypage-addpost";
+              
+              // 버튼 내부 콘텐츠 감싸기
+              const addPostContent = document.createElement("div");
+              addPostContent.className = "countrypage-addpost-content";
+
+              // 텍스트 추가
+              const addPostText = document.createElement("span");
+              addPostText.innerText = "글 작성";
+
+              // 아이콘 추가
+              const addPostIcon = document.createElement("span");
+              addPostIcon.className = "material-symbols-outlined";
+              addPostIcon.innerText = "add_box";
+
+              // 요소 추가
+              addPostContent.appendChild(addPostText);
+              addPostContent.appendChild(addPostIcon);
+              addPostButton.appendChild(addPostContent);
+
+              // 버튼 클릭 이벤트 추가
+              addPostButton.addEventListener("click", () => {
+                  const countryName = "<%= encodeURIComponent(countryName) %>";
+                  window.location.href = `/countrypage/${countryName}/가볼 만한 곳/addpost`;
+              });
+
+              // countryMessage에 버튼 추가
+              countryMessage.appendChild(addPostButton);
+          } else {
+              // 로그아웃된 경우 → 기본 문구 유지
+              countryMessage.innerHTML = "<p>가볼 만한 곳 정보를 공유하려면 로그인하세요!</p>";
+          }
+      } catch (error) {
+          console.error("로그인 상태 확인 실패:", error);
+      }
+  }
+
+  checkLoginStatus();
+
+  document.getElementById("addPostButton").addEventListener("click", () => {
+      const countryName = "<%= encodeURIComponent(countryName) %>";
+      window.location.href = `/countrypage/${countryName}/1/addpost`;
+  });
+</script>

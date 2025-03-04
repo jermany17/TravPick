@@ -1,0 +1,67 @@
+/* 로그인 페이지 전체 배경 */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #a5a8eb; /* 연한 파란색 배경 */
+}
+
+/* 로그인 박스 */
+.login-box {
+  background: white;
+  padding: 40px;
+  border-radius: 10px;
+  text-align: center;
+  width: 350px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* 로그인 입력 필드 */
+.login-input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 2px solid #a5a8eb;
+  border-radius: 5px;
+  font-size: 16px;
+  text-align: center;
+}
+
+/* 로그인 버튼 스타일 */
+.login-button, .signup-button {
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 20px;
+  border: none;
+  background-color: #a5a8eb;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.login-button:hover, .signup-button:hover {
+  background-color: #878bde;
+}
+
+/* Google Material Symbols 아이콘 스타일 */
+.material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 48;
+  font-size: 80px !important; /* 아이콘 크기 조정 */
+  color: #a5a8eb; /* 아이콘 색상 */
+  margin-bottom: 20px;
+}
+
+/* 로그인 실패 메시지 스타일 */
+.error-message {
+  color: red;
+  font-size: 14px;
+  margin-top: 10px;
+  display: none; /* 기본적으로 숨김 */
+}

@@ -1,0 +1,100 @@
+/* 회원가입 페이지 스타일 */
+.signup-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #a5a8eb;
+}
+
+.signup-box {
+  background: white;
+  padding: 40px;
+  border-radius: 10px;
+  text-align: left; 
+  width: 350px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.signup-input-group {
+  display: flex;
+  align-items: center; 
+  justify-content: space-between;
+  width: 100%;
+}
+
+.signup-input {
+  width: calc(80% - 10px);
+  padding: 10px;
+  margin: 10px 0;
+  border: 2px solid #a5a8eb;
+  border-radius: 5px;
+  font-size: 16px;
+  text-align: left;
+}
+
+/* 아이디 중복확인 & 비밀번호 확인 버튼 */
+.signup-check-button {
+  width: 20%; /* 버튼 20% */
+  background-color: #a5a8eb;
+  color: white;
+  border: none;
+  padding: 10px 0;
+  cursor: pointer;
+  border-radius: 5px;
+  white-space: nowrap;
+  min-width: 60px; /* 최소 너비 설정 */
+  text-align: center;
+  margin-left: 10px;
+}
+
+.check-button:hover {
+  background-color: #878bde;
+}
+
+/* 회원가입 버튼 */
+.signup-submit-button {
+  width: 80%;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 20px;
+  border: none;
+  background-color: #a5a8eb;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 30px;
+}
+
+.signup-submit-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.signup-submit-button:hover:enabled {
+  background-color: #878bde;
+}
+
+/* 에러 메시지 */
+.signup-error-message {
+  color: red;
+  font-size: 14px;
+  margin-top: 5px;
+  display: none;
+}
+
+/* 아이콘만 중앙 정렬 */
+.signup-box .material-symbols-outlined {
+  align-self: center;
+  font-size: 80px;
+  color: #a5a8eb;
+}
+
+/* 회원가입 버튼만 중앙 정렬 */
+.signup-box .signup-submit-button {
+  align-self: center;
+}

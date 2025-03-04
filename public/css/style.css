@@ -1,0 +1,160 @@
+/* 전체 스타일 */
+body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  color: #a5a8eb; /* 연한 파란색 */
+}
+
+/* 헤더 스타일 */
+header {
+  width: 100%;
+  padding: 20px;
+  border-bottom: 1px solid #a5a8eb;
+}
+
+/* 네비게이션 스타일 */
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* 로고 스타일 */
+nav a:first-child {
+  text-decoration: none;
+  color: #a5a8eb;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+/* 로그인 버튼 (헤더) */
+.header-login {
+  border: 2px solid #a5a8eb;
+  border-radius: 20px;
+  padding: 5px 15px;
+  text-decoration: none;
+  font-size: 13px;
+  color: #a5a8eb;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  margin-right: 30px;
+}
+
+.header-login:hover {
+  background-color: #a5a8eb;
+  color: white;
+}
+
+/* 메인 컨텐츠 스타일 */
+main {
+  display: flex;
+  justify-content: center; /* 가운데 정렬 */
+  align-items: flex-start; /* 상단 정렬 */
+  width: 100%;
+  height: 100vh;
+  padding-top: 20px;
+  gap: 15px; /* 지도와 안내문구 사이 간격 */
+}
+
+/* 안내 섹션 */
+.right-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 25%; /* 오른쪽 박스 너비 */
+}
+
+/* 안내 문구 */
+.right-section p {
+  text-align: center; 
+  font-size: 17px;
+  text-align: left;
+  line-height: 1.5;
+}
+
+/* 사용자 정보 박스 */
+.user-info-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 2px solid #a5a8eb;
+  border-radius: 10px;
+  padding: 20px;
+  width: 150px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* 사용자 아이콘 */
+.user-info-box .material-symbols-outlined {
+  font-size: 50px !important;
+  color: #a5a8eb;
+}
+
+/* 사용자 정보 내용 */
+.user-detail {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  justify-content: center; 
+  width: 100%;
+  gap: 10px;
+}
+
+/* 사용자 정보 개별 항목 */
+.user-info-item {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* 왼쪽 정렬 유지 */
+  width: 100%;
+  font-size: 13px;
+  gap: 15px; /*이름/아이디와 값 사이 여백 추가 */
+}
+
+/* 이름, 아이디 라벨 */
+.user-label {
+  padding: 5px 10px;
+  border: 1px solid #a5a8eb;
+  border-radius: 15px;
+  color: #a5a8eb;
+  text-align: center;
+  min-width: 50px;
+}
+
+/* 이름, 아이디 값 왼쪽 정렬 */
+.user-info-item span:last-child {
+  text-align: left;
+  flex-grow: 1;
+}
+
+/* 내 정보 버튼 */
+.mypage-button {
+  margin-top: 15px;
+  padding: 5px 10px;
+  border: 1px solid #a5a8eb;
+  border-radius: 20px;
+  color: #a5a8eb;
+  background: none;
+  cursor: pointer;
+  font-size: 11px;
+}
+
+.mypage-button:hover {
+  background: #a5a8eb;
+  color: white;
+}
+
+/* 푸터 스타일 */
+footer {
+  width: 100%;
+  padding: 20px;
+  border-top: 1px solid #a5a8eb;
+  font-size: 14px;
+  position: relative;
+  bottom: 0;
+}

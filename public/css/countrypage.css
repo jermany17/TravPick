@@ -1,0 +1,129 @@
+/* countrypage 전체 컨테이너 스타일 */
+.countrypage-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: center;
+  width: 100%;
+  height: 100vh;
+  gap: 40px;
+}
+
+/* countrypage 타이틀 스타일 */
+.countrypage-title {
+  margin-top: 20px;
+  font-size: 30px;
+  font-weight: normal;
+  color: #a5a8eb;
+}
+
+/* 옵션 카드 컨테이너 */
+.countrypage-options {
+  margin-top: 50px;
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+}
+
+/* 각 카드 스타일 */
+.countrypage-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 170px;
+  height: 170px;
+  border: 2px solid #a5a8eb;
+  border-radius: 20px;
+  text-decoration: none;
+  color: #a5a8eb;
+  font-size: 18px;
+  font-weight: normal;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* 아이콘 스타일 */
+.countrypage-card .material-symbols-outlined {
+  font-size: 50px !important;
+  margin-bottom: 10px;
+  transition: color 0.3s ease;
+}
+
+/* hover 효과 */
+.countrypage-card:hover {
+  background-color: #a5a8eb;
+  color: white;
+}
+
+
+/* hover 시 아이콘 색상도 변경 */
+.countrypage-card:hover .material-symbols-outlined {
+  color: white;
+}
+
+.countrypage-content {
+  max-width: 800px;
+  margin-top: -20px;
+  padding-top: 5px;
+  padding-bottom: 20px;
+  padding-right: 20px;
+  padding-left: 20px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+
+  display: flex;
+  flex-direction: column; 
+  align-items: center; 
+  justify-content: center; 
+  gap: 15px; 
+  text-align: center;
+}
+
+/* 글 작성 버튼 스타일*/
+.countrypage-addpost {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 60%;
+  height: 100px;
+  background-color: white; /* 테두리 대신 배경색 */
+  color: #a5a8eb;
+  font-size: 15px;
+  cursor: pointer;
+  text-decoration: none;
+  border: none; /* 기존 테두리 제거 */
+  border-radius: 25px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* 테두리 대신 그림자 */
+  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* 버튼 내부 텍스트 & 아이콘을 개별적으로 감싸기 */
+.countrypage-addpost-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: normal; /* 글자 높이 문제 해결 */
+}
+
+/* 아이콘 스타일 */
+.countrypage-addpost .material-symbols-outlined {
+  font-size: 20px !important;
+  transition: color 0.3s ease;
+  margin-bottom: 0px;
+}
+
+/* hover 효과 */
+.countrypage-addpost:hover {
+  background-color: #a5a8eb;
+  color: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* hover 시 그림자 강조 */
+}
+
+.countrypage-addpost:hover .material-symbols-outlined {
+  color: white;
+}
