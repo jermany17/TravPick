@@ -6,148 +6,119 @@
     <h1 class="addpost-title">게시물 작성</h1>
 
     <div class="addpost-info">
-        <p><%= countryName %><br><%= postType %></p>
+        <p><%= countryName %> <%= postType %></p>
     </div>
 
-    <div id="postContent" class="addpost-content" contenteditable="true">
-        <p>여기에 게시물을 작성해보세요!</p>
+    <!-- 글과 이미지가 추가되는 컨테이너 -->
+    <div id="addpostElements" class="addpost-elements-container"></div>
+
+    <!-- 글 작성 영역 (항상 표시) -->
+    <div id="addpostTextEditorContainer" class="addpost-text-editor-container">
+        <!-- 글 작성 컨테이너 추가 -->
+        <div class="addpost-textarea-container">
+            <textarea id="addpostTextEditor" class="addpost-textarea" placeholder="여기에 글을 작성하세요."></textarea>
+        </div>
+        <div class="addpost-text-buttons">
+            <input type="file" id="addpostImageUpload" accept="image/*" style="display: none;">
+            <span id="addpostAddImageButton" class="material-symbols-outlined addpost-icon-image">image</span>
+            <span id="addpostConfirmTextButton" class="material-symbols-outlined addpost-icon-text">send</span>
+        </div>
     </div>
 
-    <div class="addpost-buttons">
-        <button id="submitPostButton">제출</button>
-    </div>
+    <button id="addpostSubmitPostButton" class="addpost-submit-button">제출</button>
 </main>
 
 <%- include("include/_footer") %>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-    const postContent = document.getElementById("postContent");
-    const defaultText = "여기에 게시물을 작성해보세요!";
+    const postElements = document.getElementById("addpostElements");
+    const textEditor = document.getElementById("addpostTextEditor");
+    const imageUpload = document.getElementById("addpostImageUpload");
 
-    // 포커스 시 기본 문구 삭제
-    postContent.addEventListener("focus", () => {
-        if (postContent.innerText.trim() === defaultText) {
-            postContent.innerHTML = "";
+    // 이미지 추가 버튼 클릭 이벤트
+    document.getElementById("addpostAddImageButton").addEventListener("click", () => {
+        imageUpload.click();
+    });
+
+    // 이미지 업로드 기능
+    imageUpload.addEventListener("change", (event) => {
+        const file = event.target.files[0];
+        if (file && file.type.startsWith("image")) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const imageWrapper = document.createElement("div");
+                imageWrapper.classList.add("addpost-element", "addpost-image-wrapper");
+
+                const img = document.createElement("img");
+                img.src = e.target.result;
+                img.classList.add("addpost-image");
+
+                const controls = createControls(imageWrapper);
+
+                imageWrapper.appendChild(img);
+                imageWrapper.appendChild(controls);
+                postElements.appendChild(imageWrapper);
+            };
+            reader.readAsDataURL(file);
         }
     });
 
-    // 포커스를 잃었을 때 내용이 없으면 기본 문구 복원
-    postContent.addEventListener("blur", () => {
-        // 실제 사용자 입력된 텍스트 가져오기
-        const text = postContent.innerText.replace(/\n/g, "").trim(); // 개행문자 제거 후 검사
-        
-        if (!text) {
-            postContent.innerHTML = `<p>${defaultText}</p>`;
-        }
-    });
-    
-    // Ctrl + V로 이미지 붙여넣기
-    postContent.addEventListener("paste", (event) => {
-        const items = (event.clipboardData || event.originalEvent.clipboardData).items;
-        for (let item of items) {
-            if (item.type.startsWith("image")) {
-                const file = item.getAsFile();
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    insertImage(e.target.result);
-                };
-                reader.readAsDataURL(file);
-                event.preventDefault();
-            }
-        }
+    // 글 입력 후 버튼 클릭 시 추가
+    document.getElementById("addpostConfirmTextButton").addEventListener("click", () => {
+        const textContentValue = textEditor.value.trim();
+        if (!textContentValue) return;
+
+        const textWrapper = document.createElement("div");
+        textWrapper.classList.add("addpost-element", "addpost-text-wrapper");
+
+        const textContent = document.createElement("div");
+        textContent.classList.add("addpost-text-content");
+        textContent.innerText = textContentValue;
+
+        textWrapper.appendChild(textContent);
+        textWrapper.appendChild(createControls(textWrapper));
+        postElements.appendChild(textWrapper);
+
+        textEditor.value = ""; // 입력 필드 초기화
     });
 
-    // 드래그 앤 드롭 이미지 업로드
-    postContent.addEventListener("dragover", (event) => {
-        event.preventDefault();
-        postContent.style.border = "2px dashed #007bff"; // 드래그 효과
-    });
+    // 컨트롤 버튼 생성 (삭제, 이동)
+    function createControls(element) {
+        const controls = document.createElement("div");
+        controls.classList.add("addpost-controls");
 
-    postContent.addEventListener("dragleave", () => {
-        postContent.style.border = "1px solid #ddd";
-    });
-
-    postContent.addEventListener("drop", (event) => {
-        event.preventDefault();
-        postContent.style.border = "1px solid #ddd";
-
-        const files = event.dataTransfer.files;
-        for (let file of files) {
-            if (file.type.startsWith("image")) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    insertImage(e.target.result);
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-    });
-
-    // 이미지 삽입 함수 (이미지 추가 시 크기 조절 기능 포함)
-    function insertImage(src) {
-        const imgWrapper = document.createElement("div");
-        imgWrapper.classList.add("resizable-image-wrapper");
-
-        const img = document.createElement("img");
-        img.src = src;
-        img.classList.add("addpost-image");
-
-        const resizer = document.createElement("div");
-        resizer.classList.add("resizer");
-
-        imgWrapper.appendChild(img);
-        imgWrapper.appendChild(resizer);
-        postContent.appendChild(imgWrapper);
-
-        makeImageResizable(imgWrapper, resizer);
-    }
-
-
-    // 이미지 크기 조절 기능
-    function makeImageResizable(imgWrapper, resizer) {
-        let isResizing = false;
-
-        resizer.addEventListener("mousedown", (event) => {
-            event.preventDefault();
-            isResizing = true;
-
-            document.addEventListener("mousemove", resize);
-            document.addEventListener("mouseup", stopResize);
+        const deleteButton = document.createElement("button");
+        deleteButton.classList.add("addpost-delete-button");
+        deleteButton.innerHTML = `<span class="material-symbols-outlined addpost-icon-control">delete</span>`;
+        deleteButton.addEventListener("click", () => {
+            element.remove();
         });
 
-        function resize(event) {
-            if (!isResizing) return;
+        const moveUpButton = document.createElement("button");
+        moveUpButton.classList.add("addpost-move-up-button");
+        moveUpButton.innerHTML = `<span class="material-symbols-outlined addpost-icon-control">arrow_upward</span>`;
+        moveUpButton.addEventListener("click", () => {
+            if (element.previousElementSibling) {
+                element.parentNode.insertBefore(element, element.previousElementSibling);
+            }
+        });
 
-            const rect = imgWrapper.getBoundingClientRect();
-            const newWidth = event.clientX - rect.left;
-            const newHeight = event.clientY - rect.top;
+        const moveDownButton = document.createElement("button");
+        moveDownButton.classList.add("addpost-move-down-button");
+        moveDownButton.innerHTML = `<span class="material-symbols-outlined addpost-icon-control">arrow_downward</span>`;
+        moveDownButton.addEventListener("click", () => {
+            if (element.nextElementSibling) {
+                element.parentNode.insertBefore(element.nextElementSibling, element);
+            }
+        });
 
-            imgWrapper.style.width = `${newWidth}px`;
-            imgWrapper.style.height = `${newHeight}px`;
-        }
+        controls.appendChild(moveUpButton);
+        controls.appendChild(moveDownButton);
+        controls.appendChild(deleteButton);
 
-        function stopResize() {
-            isResizing = false;
-            document.removeEventListener("mousemove", resize);
-            document.removeEventListener("mouseup", stopResize);
-        }
+        element.appendChild(controls); // 컨트롤 버튼을 해당 요소 내부에 추가
+        return controls;
     }
-
-    // 게시글 데이터 제출
-    document.getElementById("submitPostButton").addEventListener("click", () => {
-        const country = "<%= countryName %>";
-        const type = "<%= postType %>";
-        const content = postContent.innerHTML;
-
-        const postData = {
-            country: country,
-            type: type,
-            contents: content
-        };
-
-        console.log("게시물 데이터:", postData);
-        alert("제출 버튼을 눌렀습니다. (아직 저장되지 않습니다.)");
-    });
 });
 </script>

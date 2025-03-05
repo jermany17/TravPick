@@ -1,5 +1,17 @@
+.addpost-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0px;
+}
+
+.addpost-info {
+  font-size: 15px;
+  font-weight: bold;
+  margin: 0px;
+}
+
 .addpost-container {
-  width: 80%;
+  width: 90%;
   margin: 20px auto;
   padding: 20px;
   background-color: #fff;
@@ -11,59 +23,134 @@
   gap: 15px;
 }
 
-.addpost-title {
-  text-align: center;
-  font-size: 24px;
-  margin-bottom: 15px;
-}
-
-.addpost-info {
-  width: 95%;
-  padding-top: 5px;
-  padding-bottom: 20px;
-  padding-right: 10px;
-  padding-left: 10px;
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 15px;
-  text-align: center;
-}
-
-.addpost-content {
-  min-height: 400px;
-  max-height: 400px; 
-  width: 95%;
+.addpost-elements-container {
+  width: 98%;
+  height: 70%;
+  overflow-y: auto;
+  overflow-x: hidden;
   border: 1px solid #ddd;
-  padding: 10px;
-  margin-bottom: 15px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   border-radius: 5px;
-  background-color: #fafafa;
-  white-space: pre-wrap;
-  text-align: left;
-  overflow-y: auto; 
+  background-color: #fff;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
-.addpost-content:focus {
-  outline: none;
-  border-color: #a5a8eb;;
+.addpost-element {
+  width: 100%;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  position: relative;
+  box-sizing: border-box; 
 }
 
-.addpost-buttons {
+/* 글 작성 입력창 스타일 */
+.addpost-text-editor-container {
+  width: 98%;
+  height: 70px;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 10px;
+  border: 1px solid #c4c4c4;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  position: relative;
+  box-sizing: border-box;
 }
 
-.addpost-buttons button {
-  width: 200px;
-  background-color: #a5a8eb;;
+/* 글 작성 컨테이너 (아이콘과 충돌 방지) */
+.addpost-textarea-container {
+  width: 90%;
+  flex-grow: 1;
+}
+
+.addpost-textarea {
+  width: 100%;
+  height: 40px;
+  border: none;
+  resize: none;
+  background: transparent;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.addpost-textarea:focus {
+  outline: none;
+}
+
+/* 아이콘 버튼 위치 조정 (오른쪽 하단) */
+.addpost-text-buttons {
+  width: 10%;
+  display: flex;
+  gap: 5px;
+  justify-content: flex-end; /* 오른쪽 정렬 */
+  align-items: center;
+}
+
+/* 개별 아이콘 스타일 */
+.addpost-icon-text {
+  font-size: 24px !important;
+  cursor: pointer !important;
+  color: #7c84d1 !important;
+  margin-bottom: 0px;
+}
+
+.addpost-icon-text:hover {
+  color: #5c6bc0 !important;
+}
+
+.addpost-icon-image {
+  font-size: 24px !important;
+  cursor: pointer !important;
+  color: #7c84d1 !important;
+  margin-bottom: 0px;
+}
+
+.addpost-icon-image:hover {
+  color: #5c6bc0 !important;
+}
+
+/* 컨트롤 버튼 스타일 (위, 아래, 삭제) */
+.addpost-controls {
+  display: flex;
+  justify-content: flex-end; /* 오른쪽 정렬 */
+  gap: 4px;
+  margin-top: 10px; /* 글과 간격 추가 */
+}
+
+.addpost-controls button {
+  background-color: #a5a8eb !important;
+  color: white !important;
+  border: none !important;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.addpost-controls button:hover {
+  background-color: #7c84d1 !important;
+}
+
+/* 컨트롤 아이콘 스타일 */
+.addpost-icon-control {
+  font-size: 20px !important;
+  color: white !important;
+  margin-bottom: 0px;
+}
+
+/* 이미지 스타일 (원본 비율 유지, 가로 크기 자동 조정) */
+.addpost-image {
+  width: auto;
+  max-width: 100%;
+  height: 300px;
+  object-fit: contain;
+  border-radius: 5px;
+}
+
+.addpost-submit-button {
+  background-color: #a5a8eb;
   color: white;
   border: none;
   padding: 8px 12px;
@@ -71,13 +158,14 @@
   border-radius: 4px;
 }
 
-.addpost-buttons button:hover {
-  background-color: #0056b3;
+.addpost-submit-button:hover {
+  background-color: #7c84d1;
 }
 
-.addpost-image {
-  max-width: 100%;
-  display: block;
-  margin: 10px 0;
-  border-radius: 5px;
+.addpost-text-content {
+  text-align: left; /* 왼쪽 정렬 */
+  width: 100%;
+  word-wrap: break-word;
+  padding: 5px;
+  box-sizing: border-box;
 }
