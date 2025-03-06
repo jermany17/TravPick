@@ -36,14 +36,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const textEditor = document.getElementById("addpostTextEditor");
     const imageUpload = document.getElementById("addpostImageUpload");
 
-    // 이미지 추가 버튼 클릭 이벤트
     document.getElementById("addpostAddImageButton").addEventListener("click", () => {
         imageUpload.click();
     });
 
-    // 이미지 업로드 기능
     imageUpload.addEventListener("change", (event) => {
         const file = event.target.files[0];
+
         if (file && file.type.startsWith("image")) {
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -62,9 +61,11 @@ document.addEventListener("DOMContentLoaded", () => {
             };
             reader.readAsDataURL(file);
         }
+
+        // 입력 값 초기화해서 같은 파일 다시 업로드 가능하게 함
+        imageUpload.value = "";
     });
 
-    // 글 입력 후 버튼 클릭 시 추가
     document.getElementById("addpostConfirmTextButton").addEventListener("click", () => {
         const textContentValue = textEditor.value.trim();
         if (!textContentValue) return;
@@ -80,10 +81,9 @@ document.addEventListener("DOMContentLoaded", () => {
         textWrapper.appendChild(createControls(textWrapper));
         postElements.appendChild(textWrapper);
 
-        textEditor.value = ""; // 입력 필드 초기화
+        textEditor.value = "";
     });
 
-    // 컨트롤 버튼 생성 (삭제, 이동)
     function createControls(element) {
         const controls = document.createElement("div");
         controls.classList.add("addpost-controls");
@@ -115,10 +115,79 @@ document.addEventListener("DOMContentLoaded", () => {
 
         controls.appendChild(moveUpButton);
         controls.appendChild(moveDownButton);
-        controls.appendChild(deleteButton);
 
-        element.appendChild(controls); // 컨트롤 버튼을 해당 요소 내부에 추가
+        // **이미지가 아닌 경우에만 편집 버튼 추가**
+        if (!element.classList.contains("addpost-image-wrapper")) {
+            const editButton = document.createElement("button");
+            editButton.classList.add("addpost-edit-button");
+            editButton.dataset.mode = "edit"; // 초기에 'edit' 모드 설정
+            editButton.innerHTML = `<span class="material-symbols-outlined addpost-icon-control">edit</span>`;
+            editButton.addEventListener("click", () => {
+                if (editButton.dataset.mode === "edit") {
+                    enableEditing(element, editButton);
+                } else {
+                    saveEditing(element, editButton);
+                }
+            });
+
+            controls.appendChild(editButton);
+        }
+
+        controls.appendChild(deleteButton);
+        element.appendChild(controls);
         return controls;
+    }
+
+    function enableEditing(element, editButton) {
+        const textContent = element.querySelector(".addpost-text-content");
+
+        if (!textContent) {
+            console.error("텍스트 요소를 찾을 수 없습니다.");
+            return;
+        }
+
+        const textarea = document.createElement("textarea");
+        textarea.classList.add("addpost-edit-textarea");
+        textarea.value = textContent.innerText;
+        textContent.replaceWith(textarea);
+
+        element.style.backgroundColor = "#e6f7ff"; // 수정 모드 배경색 변경
+        editButton.innerHTML = `<span class="material-symbols-outlined addpost-icon-control">save</span>`;
+        editButton.dataset.mode = "save"; // 상태 변경
+
+        // **실시간 입력 감지하여 save 버튼 활성/비활성화**
+        textarea.addEventListener("input", () => {
+            editButton.disabled = textarea.value.trim().length === 0;
+        });
+
+        // 초기 상태에서 값이 없으면 버튼 비활성화
+        editButton.disabled = textarea.value.trim().length === 0;
+    }
+
+    function saveEditing(element, editButton) {
+        const textarea = element.querySelector(".addpost-edit-textarea");
+
+        if (!textarea) {
+            console.error("수정할 textarea를 찾을 수 없습니다.");
+            return;
+        }
+
+        const textValue = textarea.value.trim();
+
+        if (textValue.length === 0) {
+            alert("내용을 입력해주세요.");
+            return;
+        }
+
+        const textContent = document.createElement("div");
+        textContent.classList.add("addpost-text-content");
+        textContent.innerText = textValue;
+
+        textarea.replaceWith(textContent);
+        element.style.backgroundColor = ""; // 원래 색으로 복귀
+        editButton.innerHTML = `<span class="material-symbols-outlined addpost-icon-control">edit</span>`;
+        editButton.dataset.mode = "edit"; // 상태 변경
+        editButton.disabled = false;
     }
 });
 </script>

@@ -169,3 +169,19 @@
   padding: 5px;
   box-sizing: border-box;
 }
+
+/* 수정 모드 배경색 */
+.addpost-element.editing {
+  background-color: #e6f7ff;
+}
+
+/* 수정 모드 textarea 스타일 */
+.addpost-edit-textarea {
+  width: 100%;
+  height: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 5px;
+  font-size: 14px;
+  resize: none;
+}
