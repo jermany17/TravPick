@@ -16,6 +16,7 @@ app.use(sessionMiddleware);
 app.use(express.json());
 
 // EJS 설정
+app.set("trust proxy", 1); // Heroku에서 secure 쿠키가 정상 동작하도록 설정
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
