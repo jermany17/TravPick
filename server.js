@@ -3,6 +3,7 @@ const path = require("path");
 const connectDB = require("./config/db");
 const { sessionMiddleware, corsMiddleware } = require("./config/sessionConfig");
 const authRoutes = require("./route/authRoute");
+const imageRoutes = require('./route/imageRoute');
 
 require("dotenv").config();
 
@@ -23,6 +24,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // 라우트 설정
 app.use(authRoutes);
+app.use(imageRoutes);
 app.use("/", require("./route/index"));
 
 const PORT = process.env.PORT || 8080;
