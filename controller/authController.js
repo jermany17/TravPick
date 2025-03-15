@@ -15,8 +15,8 @@ exports.checkUserId = async (req, res) => {
 // 회원 가입 API
 exports.signup = async (req, res) => {
     try {
-        const { nickName, userId, userPassword } = req.body; // 데이터 추출
-        const user = await User.create({ nickName, userId, userPassword }); // 생성(해싱은 User에서)
+        const { userName, userId, userPassword } = req.body; // 데이터 추출
+        const user = await User.create({ userName, userId, userPassword }); // 생성(해싱은 User에서)
         res.status(201).json({ message: "회원가입이 완료되었습니다." });
     } catch (error) {
         res.status(400).json({ message: "회원가입 실패" });

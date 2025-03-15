@@ -10,6 +10,37 @@
   margin: 0px;
 }
 
+/* 제목 입력 컨테이너 스타일 */
+.addpost-title-container {
+  width: 98%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid #c4c4c4;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  box-sizing: border-box;
+}
+
+/* 제목 입력 필드 스타일 */
+.addpost-title-input {
+  width: 100%;
+  height: 40px;
+  border: none;
+  font-size: 16px;
+  font-weight: normal;
+  padding: 5px 10px;
+  background-color: transparent;
+  box-sizing: border-box;
+}
+
+.addpost-title-input:focus {
+  outline: none;
+  border-bottom: 2px solid #7c84d1; /* 포커스 시 강조 */
+}
+
+
 .addpost-container {
   width: 90%;
   margin: 20px auto;

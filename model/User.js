@@ -2,7 +2,7 @@ const mongoose = require("mongoose"); // mongoDB 사용
 const bcrypt = require("bcryptjs"); // 비밀번호 해싱
 
 const UserSchema = new mongoose.Schema({
-    nickName: { type: String, required: true },
+    userName: { type: String, required: true },
     userId: { type: String, required: true, unique: true },
     userPassword: { type: String, required: true },
     createAt: { type: Date, default: Date.now },

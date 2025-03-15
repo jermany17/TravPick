@@ -9,6 +9,11 @@
         <p><%= countryName %> <%= postType %></p>
     </div>
 
+    <!-- 제목 입력 필드 추가 -->
+    <div class="addpost-title-container">
+        <input type="text" id="addpostTitle" class="addpost-title-input" placeholder="제목을 입력하세요">
+    </div>
+
     <!-- 글과 이미지가 추가되는 컨테이너 -->
     <div id="addpostElements" class="addpost-elements-container"></div>
 
@@ -35,6 +40,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const postElements = document.getElementById("addpostElements");
     const textEditor = document.getElementById("addpostTextEditor");
     const imageUpload = document.getElementById("addpostImageUpload");
+    const submitButton = document.getElementById("addpostSubmitPostButton");
+    const titleInput = document.getElementById("addpostTitle");
+
+    const countryName = "<%= countryName %>";
+    const postType = "<%= postType %>"; 
+
+    // 제출 버튼 상태 업데이트 (글 또는 이미지가 있어야 활성화)
+    function updateSubmitButtonState() {
+        submitButton.disabled = postElements.children.length === 0 || titleInput.value.trim().length === 0;
+    }
+
+    titleInput.addEventListener("input", updateSubmitButtonState);
 
     document.getElementById("addpostAddImageButton").addEventListener("click", () => {
         imageUpload.click();
@@ -53,16 +70,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 img.src = e.target.result;
                 img.classList.add("addpost-image");
 
-                const controls = createControls(imageWrapper);
-
+                imageWrapper.file = file; // 파일을 dataset에 저장 (업로드 시 사용)
                 imageWrapper.appendChild(img);
-                imageWrapper.appendChild(controls);
+                imageWrapper.appendChild(createControls(imageWrapper));
                 postElements.appendChild(imageWrapper);
+
+                updateSubmitButtonState();
             };
             reader.readAsDataURL(file);
         }
 
-        // 입력 값 초기화해서 같은 파일 다시 업로드 가능하게 함
         imageUpload.value = "";
     });
 
@@ -77,12 +94,111 @@ document.addEventListener("DOMContentLoaded", () => {
         textContent.classList.add("addpost-text-content");
         textContent.innerText = textContentValue;
 
+        textWrapper.dataset.text = textContentValue; // 텍스트를 dataset에 저장
         textWrapper.appendChild(textContent);
         textWrapper.appendChild(createControls(textWrapper));
         postElements.appendChild(textWrapper);
 
         textEditor.value = "";
+        updateSubmitButtonState();
     });
+
+    // 게시물 제출 기능 추가
+    submitButton.addEventListener("click", async () => {
+        const title = titleInput.value.trim();
+        
+        if (postElements.children.length === 0 || title.length === 0) {
+            alert("제목과 내용을 입력해주세요.");
+            return;
+        }
+
+        submitButton.disabled = true;
+        submitButton.innerText = "게시물 업로드 중...";
+
+        const contents = new Array(postElements.children.length); // 1. 요소 개수만큼 빈 배열 생성
+        const imageUploadPromises = [];
+
+        // 2. 모든 요소의 원래 위치를 기억하면서 `contents` 배열에 먼저 placeholder 삽입
+        Array.from(postElements.children).forEach((element, index) => {
+            if (element.classList.contains("addpost-text-wrapper")) {
+                contents[index] = element.dataset.text; // 글은 즉시 저장
+            } else if (element.classList.contains("addpost-image-wrapper")) {
+                const file = element.file;
+                if (file) {
+                    const formData = new FormData();
+                    formData.append("file", file);
+
+                    console.log("FormData 내용 확인:", formData);
+
+                    const uploadPromise = fetch("/s3/upload", {
+                        method: "POST",
+                        body: formData,
+                        credentials: "include",
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log("S3 업로드 응답:", data);
+                        if (data.imageUrl) {
+                            contents[index] = data.imageUrl; // 3. 업로드된 이미지 URL을 원래 위치에 삽입
+                            console.log(`이미지 업로드 완료: ${data.imageUrl} (index: ${index})`);
+                        } else {
+                            console.error("이미지 업로드 실패: 응답에 imageUrl 없음", data);
+                        }
+                    })
+                    .catch(error => console.error("이미지 업로드 실패:", error));
+
+                    imageUploadPromises.push(uploadPromise);
+                }
+            }
+        });
+
+        // 4. 모든 이미지 업로드가 완료될 때까지 기다림
+        await Promise.all(imageUploadPromises);
+
+        console.log("모든 이미지 업로드 완료! 최종 contents 배열:", contents);
+
+        if (contents.every(item => item === undefined || item === "")) {
+            alert("게시물 내용을 입력해주세요.");
+            submitButton.disabled = false;
+            submitButton.innerText = "제출";
+            return;
+        }
+
+        const postData = { 
+            title,
+            country: countryName,
+            classify: postType,
+            contents 
+        };
+
+        console.log("최종적으로 서버에 보낼 contents 데이터:", JSON.stringify(postData));
+
+        fetch("/post/create", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify(postData),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.postId) {
+                alert("게시물 등록 완료!");
+                window.location.href = `/post/${data.postId}`;
+                window.history.back();
+            } else {
+                alert("게시물 등록 실패!");
+                submitButton.disabled = false;
+                submitButton.innerText = "제출";
+            }
+        })
+        .catch(error => {
+            console.error("게시물 생성 실패:", error);
+            alert("게시물 등록 중 오류가 발생했습니다.");
+            submitButton.disabled = false;
+            submitButton.innerText = "제출";
+        });
+    });
+    updateSubmitButtonState();
 
     function createControls(element) {
         const controls = document.createElement("div");

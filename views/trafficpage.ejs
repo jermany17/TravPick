@@ -61,9 +61,4 @@
   }
 
   checkLoginStatus();
-
-  document.getElementById("addPostButton").addEventListener("click", () => {
-      const countryName = "<%= encodeURIComponent(countryName) %>";
-      window.location.href = `/countrypage/${countryName}/3/addpost`;
-  });
 </script>

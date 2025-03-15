@@ -31,19 +31,19 @@ router.get("/countrypage/:countryName", (req, res) => {
     res.render("countrypage", { countryName }); // 나라별 페이지
 });
 
-router.get('/countrypage/:country/placepage', (req, res) => {
-    const countryName = req.params.country; // URL에서 국가명 가져오기
-    res.render('placepage', { countryName });
-});
-
-router.get('/countrypage/:country/restaurantpage', (req, res) => {
-    const countryName = req.params.country; // URL에서 국가명 가져오기
-    res.render('restaurantpage', { countryName });
-});
-
-router.get('/countrypage/:country/trafficpage', (req, res) => {
-    const countryName = req.params.country; // URL에서 국가명 가져오기
-    res.render('trafficpage', { countryName });
+router.get('/countrypage/:country/:category', (req, res) => {
+    const countryName = req.params.country;
+    const category = decodeURIComponent(req.params.category); // 디코딩 처리
+    
+    if (category === "가볼 만한 곳") {
+        res.render('placepage', { countryName });
+    } else if (category === "식당 & 카페") {
+        res.render('restaurantpage', { countryName });
+    } else if (category === "교통") {
+        res.render('trafficpage', { countryName });
+    } else {
+        res.status(404).send("페이지를 찾을 수 없습니다.");
+    }
 });
 
 router.get('/countrypage/:country/:type/addpost', isAuthenticated, (req, res) => {
