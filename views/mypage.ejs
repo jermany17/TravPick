@@ -48,7 +48,7 @@
             if (!response.ok) throw new Error("사용자 정보를 가져올 수 없음");
 
             const result = await response.json();
-            document.getElementById("mypagesUserName").innerText = result.nickName;
+            document.getElementById("mypagesUserName").innerText = result.userName;
             document.getElementById("mypagesUserId").innerText = result.userId;
             document.getElementById("mypagesCreateAt").innerText = formatDate(result.createAt);
             document.getElementById("mypagesUpdateAt").innerText = formatDate(result.updateAt);

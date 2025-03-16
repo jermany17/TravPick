@@ -1,64 +1,210 @@
 <%- include("include/_header") %>
 
-<main class="countrypage-container">
-    <h1 class="countrypage-title"><%= countryName %></h1>
+    <main class="countrypage-container">
+        <h1 class="countrypage-title">
+            <%= countryName %>
+        </h1>
 
-    <div id="countryMessage" class="countrypage-content">
-        <p>식당 & 카페 정보를 공유하려면 로그인하세요!</p>
-    </div>
-</main>
+        <div id="countryMessage" class="countrypage-content">
+            <p>식당 & 카페 정보를 공유하려면 로그인하세요!</p>
+        </div>
 
-<%- include("include/_footer") %>
+        <!-- 게시물 리스트 -->
+        <section class="countrypage-post-list">
+            <h2 id="postCount">전체 글 (0)</h2>
+            <div id="postContainer"></div>
+        </section>
 
-<script>
-  async function checkLoginStatus() {
-      try {
-          const response = await fetch("/check-login");
-          const result = await response.json();
-          const countryMessage = document.getElementById("countryMessage");
+        <!-- 페이지네이션 -->
+        <div class="countrypage-pagination">
+            <a href="#" id="prevPage">«</a>
+            <span id="pageNumbers"></span>
+            <a href="#" id="nextPage">»</a>
+        </div>
+    </main>
 
-          if (response.ok && result.isLoggedIn) {
-              // 로그인된 경우 → 문구 변경 + 버튼 추가
-              countryMessage.innerHTML = "<p>식당 & 카페 정보를 공유해보세요!</p>";
+    <%- include("include/_footer") %>
 
-              const addPostButton = document.createElement("button");
-              addPostButton.id = "addPostButton";
-              addPostButton.className = "countrypage-addpost";
-              
-              // 버튼 내부 콘텐츠 감싸기
-              const addPostContent = document.createElement("div");
-              addPostContent.className = "countrypage-addpost-content";
+        <script>
+            async function checkLoginStatus() {
+                try {
+                    const response = await fetch("/check-login");
+                    const result = await response.json();
+                    const countryMessage = document.getElementById("countryMessage");
 
-              // 텍스트 추가
-              const addPostText = document.createElement("span");
-              addPostText.innerText = "글 작성";
+                    if (response.ok && result.isLoggedIn) {
+                        // 로그인된 경우 → 문구 변경 + 버튼 추가
+                        countryMessage.innerHTML = "<p>식당 & 카페 정보를 공유해보세요!</p>";
 
-              // 아이콘 추가
-              const addPostIcon = document.createElement("span");
-              addPostIcon.className = "material-symbols-outlined";
-              addPostIcon.innerText = "add_box";
+                        const addPostButton = document.createElement("button");
+                        addPostButton.id = "addPostButton";
+                        addPostButton.className = "countrypage-addpost";
 
-              // 요소 추가
-              addPostContent.appendChild(addPostText);
-              addPostContent.appendChild(addPostIcon);
-              addPostButton.appendChild(addPostContent);
-              
-              // 버튼 클릭 이벤트 추가
-              addPostButton.addEventListener("click", () => {
-                  const countryName = "<%= encodeURIComponent(countryName) %>";
-                  window.location.href = `/countrypage/${countryName}/식당 & 카페/addpost`;
-              });
+                        // 버튼 내부 콘텐츠 감싸기
+                        const addPostContent = document.createElement("div");
+                        addPostContent.className = "countrypage-addpost-content";
 
-              // countryMessage에 버튼 추가
-              countryMessage.appendChild(addPostButton);
-          } else {
-              // 로그아웃된 경우 → 기본 문구 유지
-              countryMessage.innerHTML = "<p>식당 & 카페 정보를 공유하려면 로그인하세요!</p>";
-          }
-      } catch (error) {
-          console.error("로그인 상태 확인 실패:", error);
-      }
-  }
+                        // 텍스트 추가
+                        const addPostText = document.createElement("span");
+                        addPostText.innerText = "글 작성";
 
-  checkLoginStatus();
-</script>
+                        // 아이콘 추가
+                        const addPostIcon = document.createElement("span");
+                        addPostIcon.className = "material-symbols-outlined";
+                        addPostIcon.innerText = "add_box";
+
+                        // 요소 추가
+                        addPostContent.appendChild(addPostText);
+                        addPostContent.appendChild(addPostIcon);
+                        addPostButton.appendChild(addPostContent);
+
+                        // 버튼 클릭 이벤트 추가
+                        addPostButton.addEventListener("click", () => {
+                            const countryName = "<%= encodeURIComponent(countryName) %>";
+                            window.location.href = `/countrypage/${countryName}/식당 & 카페/addpost`;
+                        });
+
+                        // countryMessage에 버튼 추가
+                        countryMessage.appendChild(addPostButton);
+                    } else {
+                        // 로그아웃된 경우 → 기본 문구 유지
+                        countryMessage.innerHTML = "<p>식당 & 카페 정보를 공유하려면 로그인하세요!</p>";
+                    }
+                } catch (error) {
+                    console.error("로그인 상태 확인 실패:", error);
+                }
+            }
+
+            const country = "<%= encodeURIComponent(countryName) %>";
+            const classify = "<%= encodeURIComponent('식당 & 카페') %>";
+            let currentPage = 1;
+            const postsPerPage = 5;
+
+            async function fetchPosts(page) {
+                try {
+                    const response = await fetch(`/post/list?country=${country}&classify=${classify}`);
+                    const posts = await response.json();
+                    const postContainer = document.getElementById("postContainer");
+                    const postCount = document.getElementById("postCount");
+                    postContainer.innerHTML = "";
+
+                    if (!posts || posts.length === 0) {
+                        postCount.innerText = "전체 글 (0)";
+                        postContainer.innerHTML = "<p>게시물이 없습니다.</p>";
+                        return;
+                    }
+
+                    postCount.innerText = `전체 글 (${posts.length})`;
+
+                    // 페이징 처리
+                    const startIndex = (page - 1) * postsPerPage;
+                    const endIndex = startIndex + postsPerPage;
+                    const paginatedPosts = posts.slice(startIndex, endIndex);
+
+                    paginatedPosts.forEach(post => {
+                        const postElement = document.createElement("div");
+                        postElement.className = "countrypage-post-item";
+
+                        // 텍스트 컨테이너
+                        const postText = document.createElement("div");
+                        postText.className = "countrypage-post-text";
+
+                        // 제목
+                        const title = document.createElement("a");
+                        title.href = `/post/${post._id}`;
+                        title.className = "countrypage-post-title";
+                        title.innerText = post.title;
+
+                        // userName 추가
+                        const userNameSpan = document.createElement("span");
+                        userNameSpan.className = "countrypage-post-user";
+                        userNameSpan.innerText = ` by ${post.userName}`;
+
+                        // 제목 + userName 함께 추가
+                        const titleContainer = document.createElement("div");
+                        titleContainer.className = "countrypage-post-title-container";
+                        titleContainer.appendChild(title);
+                        titleContainer.appendChild(userNameSpan);
+
+                        // 게시물 내용에서 이미지 URL을 제외한 텍스트만 가져오기
+                        const contentText = document.createElement("p");
+                        contentText.className = "countrypage-post-content-preview";
+
+                        // 첫 번째 텍스트 찾기 (이미지가 아닌 것)
+                        const firstText = post.contents.find(line => !line.startsWith("https")) || "내용 없음";
+
+                        // 50자 이상이면 '...' 추가
+                        const maxLength = 50;
+                        contentText.innerText = firstText.length > maxLength ? firstText.substring(0, maxLength) + "..." : firstText;
+
+                        // 국가 및 분류 정보 + 날짜 함께 표시
+                        const meta = document.createElement("p");
+                        meta.className = "countrypage-post-meta";
+                        meta.innerText = `${post.country} | ${post.classify} | ${new Date(post.createAt).toLocaleDateString()}`;
+
+                        postText.appendChild(titleContainer);
+                        postText.appendChild(contentText); // 제목 아래 내용 추가
+                        postText.appendChild(meta);
+
+                        // 이미지 영역
+                        const postImage = document.createElement("div");
+                        postImage.className = "countrypage-post-image";
+
+                        if (post.contents.some(line => line.startsWith("https"))) {
+                            const img = document.createElement("img");
+                            img.src = post.contents.find(line => line.startsWith("https"));
+                            img.alt = "게시물 이미지";
+                            postImage.appendChild(img);
+                        } else {
+                            postImage.classList.add("no-image");
+                            postImage.innerText = "사진 없음";
+                        }
+
+                        // postElement에 요소 추가
+                        postElement.appendChild(postText);
+                        postElement.appendChild(postImage);
+                        postContainer.appendChild(postElement);
+                    });
+
+                    updatePagination(posts.length, page);
+                } catch (error) {
+                    console.error("게시물 불러오기 오류:", error);
+                }
+            }
+
+            function updatePagination(totalPosts, currentPage) {
+                const totalPages = Math.ceil(totalPosts / postsPerPage);
+                const pageNumbers = document.getElementById("pageNumbers");
+                pageNumbers.innerHTML = "";
+
+                for (let i = 1; i <= totalPages; i++) {
+                    const pageLink = document.createElement("a");
+                    pageLink.href = "#";
+                    pageLink.innerText = i;
+                    pageLink.className = currentPage === i ? "active" : "";
+                    pageLink.addEventListener("click", () => {
+                        currentPage = i;
+                        fetchPosts(currentPage);
+                    });
+                    pageNumbers.appendChild(pageLink);
+                }
+
+                document.getElementById("prevPage").style.visibility = currentPage > 1 ? "visible" : "hidden";
+                document.getElementById("nextPage").style.visibility = currentPage < totalPages ? "visible" : "hidden";
+            }
+
+            document.getElementById("prevPage").addEventListener("click", () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    fetchPosts(currentPage);
+                }
+            });
+
+            document.getElementById("nextPage").addEventListener("click", () => {
+                currentPage++;
+                fetchPosts(currentPage);
+            });
+
+            fetchPosts(currentPage);
+            checkLoginStatus();
+        </script>

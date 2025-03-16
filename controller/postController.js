@@ -61,7 +61,7 @@ exports.getPostList = async (req, res) => {
         if (country) filter.country = country;
         if (classify) filter.classify = classify;
         
-        const posts = await Post.find().sort({ createAt: -1 }); // 최신순 정렬
+        const posts = await Post.find(filter).sort({ createAt: -1 }).lean(); // 최신순 정렬
         res.json(posts);
     } catch (error) {
         console.error("게시물 목록 조회 오류:", error);

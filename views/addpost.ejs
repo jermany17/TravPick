@@ -182,9 +182,11 @@ document.addEventListener("DOMContentLoaded", () => {
         .then(response => response.json())
         .then(data => {
             if (data.postId) {
-                alert("게시물 등록 완료!");
-                window.location.href = `/post/${data.postId}`;
-                window.history.back();
+                if (document.referrer) {
+                    location.href = document.referrer; // 이전 페이지로 이동하면서 새로고침
+                } else {
+                    window.location.href = `/post/${data.postId}`; // 이전 페이지 정보가 없으면 새 게시물 페이지로 이동
+                }
             } else {
                 alert("게시물 등록 실패!");
                 submitButton.disabled = false;
