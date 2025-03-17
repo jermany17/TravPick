@@ -111,7 +111,7 @@
 
                         // 제목
                         const title = document.createElement("a");
-                        title.href = `/post/${post._id}`;
+                        title.href = `/postpage/${post._id}`;
                         title.className = "countrypage-post-title";
                         title.innerText = post.title;
 
@@ -208,4 +208,3 @@
             fetchPosts(currentPage);
             checkLoginStatus();
         </script>
-        

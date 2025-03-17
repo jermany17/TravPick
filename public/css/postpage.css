@@ -1,0 +1,80 @@
+/* 게시물 페이지 컨테이너 */
+.postpage-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* 왼쪽 정렬 */
+  justify-content: flex-start;
+  text-align: left;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  padding-right: 40px;
+}
+
+/* 헤더 섹션 스타일 */
+.postpage-header {
+  background-color: #a5a8eb;
+  color: white;
+  width: 100%;
+  height: 10%;
+  min-height: 200px;
+  padding-left: 40px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; /* 요소를 아래로 정렬 */
+}
+
+/* 제목 및 작성자 */
+.postpage-title {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.postpage-author {
+  font-size: 16px;
+  opacity: 0.8;
+  font-weight: normal;
+}
+
+/* 메타 정보 */
+.postpage-meta {
+  font-size: 14px;
+  color: white;
+  opacity: 0.9;
+}
+
+/* 본문 컨텐츠 */
+.postpage-content {
+  width: 94.5%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* 왼쪽 정렬 */
+  gap: 15px;
+  margin-top: 20px;
+  padding-left: 40px;
+  flex-grow: 1; /* 남은 공간을 모두 차지 */
+  overflow-y: auto; /* 본문이 길어지면 스크롤 가능 */
+  min-height: 0; /* flex-grow가 작동하도록 설정 */
+}
+
+/* 이미지 스타일 */
+.postpage-image {
+  height: 400px;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* 글 스타일 */
+.postpage-text {
+  font-size: 16px;
+  color: #333;
+  text-align: left;
+  width: 100%;
+  word-wrap: break-word;
+}

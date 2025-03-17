@@ -52,4 +52,8 @@ router.get('/countrypage/:country/:type/addpost', isAuthenticated, (req, res) =>
     res.render('addpost', { countryName, postType });
 });
 
+router.get("/postpage/:postid", (req, res) => { // 게시물
+    const postid = req.params.postid;
+    res.render("postpage", { postId: postid }); 
+});
 module.exports = router;
