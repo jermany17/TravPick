@@ -1,58 +1,101 @@
 <%- include("include/_header") %>
 
-<div class="postpage-container">
-    <!-- 헤더 섹션 (타이틀, 작성자, 메타 정보) -->
-    <div class="postpage-header">
-        <h1 id="post-title" class="postpage-title"></h1>
-        <div id="post-meta" class="postpage-meta"></div>
+    <div class="postpage-container">
+        <!-- 헤더 섹션 (타이틀, 작성자, 메타 정보) -->
+        <div class="postpage-header">
+            <h1 id="post-title" class="postpage-title"></h1>
+            <div id="post-meta" class="postpage-meta"></div>
+
+            <!-- 버튼 컨테이너 (수정, 삭제) -->
+            <div id="post-buttons" class="postpage-buttons" style="display: none;">
+                <button id="edit-post" class="postpage-button">수정</button>
+                <button id="delete-post" class="postpage-button">삭제</button>
+            </div>
+        </div>
+
+        <!-- 본문 내용 (이미지 & 글) -->
+        <div id="post-content" class="postpage-content"></div>
     </div>
 
-    <!-- 본문 내용 (이미지 & 글) -->
-    <div id="post-content" class="postpage-content"></div>
-</div>
+    <script>
+        document.addEventListener("DOMContentLoaded", async function () {
+            const postId = "<%= postId.toString() %>"; // 서버에서 전달한 postId 값 사용
+            const loggedInUserId = "<%= loggedInUserId ? loggedInUserId.toString() : '' %>";
 
-<script>
-    document.addEventListener("DOMContentLoaded", async function () {
-        const postId = "<%= postId %>"; // 서버에서 전달한 postId 값 사용
-        try {
-            const response = await fetch(`/post/${postId}`);
-            if (!response.ok) {
-                throw new Error("게시물을 불러오지 못했습니다.");
-            }
-            const post = await response.json();
+            try {
+                const response = await fetch(`/post/${postId}`);
+                if (!response.ok) {
+                    throw new Error("게시물을 불러오지 못했습니다.");
+                }
+                const post = await response.json();
 
-            // 제목 및 작성자 설정
-            document.getElementById("post-title").innerHTML = `${post.title} <span class="postpage-author">by ${post.userName}</span>`;
+                // 제목 및 작성자 설정
+                document.getElementById("post-title").innerHTML = `${post.title} <span class="postpage-author">by ${post.userName}</span>`;
 
-            // 메타 데이터 설정
-            document.getElementById("post-meta").innerHTML = `
+                // 메타 데이터 설정
+                document.getElementById("post-meta").innerHTML = `
                 <span>${post.country}</span> | 
                 <span>${post.classify}</span> | 
                 <span>${new Date(post.createAt).toLocaleDateString()}</span>
-            `;
+                `;
 
-            // 콘텐츠 추가 (글과 이미지 구분)
-            const contentContainer = document.getElementById("post-content");
-            post.contents.forEach(content => {
-                if (content.startsWith("http")) {
-                    // 이미지일 경우
-                    const imgElement = document.createElement("img");
-                    imgElement.src = content;
-                    imgElement.className = "postpage-image";
-                    contentContainer.appendChild(imgElement);
-                } else {
-                    // 글일 경우
-                    const textElement = document.createElement("p");
-                    textElement.className = "postpage-text";
-                    textElement.textContent = content;
-                    contentContainer.appendChild(textElement);
+                // 콘텐츠 추가 (글과 이미지 구분)
+                const contentContainer = document.getElementById("post-content");
+                post.contents.forEach(content => {
+                    if (content.startsWith("http")) {
+                        // 이미지일 경우
+                        const imgElement = document.createElement("img");
+                        imgElement.src = content;
+                        imgElement.className = "postpage-image";
+                        contentContainer.appendChild(imgElement);
+                    } else {
+                        // 글일 경우
+                        const textElement = document.createElement("p");
+                        textElement.className = "postpage-text";
+                        textElement.textContent = content;
+                        contentContainer.appendChild(textElement);
+                    }
+                });
+
+                console.log("postId:", postId);  // 🛠 postId 값 확인
+                console.log("loggedInUserId:", loggedInUserId);  // 🛠 로그인한 사용자 ID 확인
+                console.log("postuserId: ", post.userId.toString());
+                // 로그인된 사용자가 게시물의 작성자와 같다면 버튼 표시
+                if (loggedInUserId && loggedInUserId === post.userId.toString()) {
+                    document.getElementById("post-buttons").style.display = "flex";
                 }
-            });
-        } catch (error) {
-            console.error("데이터 로드 오류:", error);
-            document.getElementById("post-content").innerHTML = "<p>게시물을 불러올 수 없습니다.</p>";
-        }
-    });
-</script>
 
-<%- include("include/_footer") %>
+                // 수정 버튼 이벤트
+                document.getElementById("edit-post").addEventListener("click", function () {
+                    window.location.href = `/changepost/${postId}`;
+                });
+
+                // 삭제 버튼 이벤트
+                document.getElementById("delete-post").addEventListener("click", async function () {
+                    if (confirm("게시물을 삭제하시겠습니까?")) {
+                        try {
+                            const deleteResponse = await fetch(`/post/${postId}`, {
+                                method: "DELETE"
+                            });
+
+                            if (!deleteResponse.ok) {
+                                throw new Error("게시물 삭제 실패");
+                            }
+
+                            alert("게시물이 삭제되었습니다.");
+                            window.location.href = "/";
+                        } catch (error) {
+                            console.error("삭제 오류:", error);
+                            alert("게시물을 삭제하는 데 실패했습니다.");
+                        }
+                    }
+                });
+
+            } catch (error) {
+                console.error("데이터 로드 오류:", error);
+                document.getElementById("post-content").innerHTML = "<p>게시물을 불러올 수 없습니다.</p>";
+            }
+        });
+    </script>
+
+    <%- include("include/_footer") %>

@@ -54,6 +54,14 @@ router.get('/countrypage/:country/:type/addpost', isAuthenticated, (req, res) =>
 
 router.get("/postpage/:postid", (req, res) => { // 게시물
     const postid = req.params.postid;
-    res.render("postpage", { postId: postid }); 
+    const loggedInUserId = req.session.user ? req.session.user.userId : null;
+
+    res.render("postpage", { postId: postid, loggedInUserId: loggedInUserId });
 });
+
+router.get("/changepost/:postid", (req, res) => { // 게시물
+    const postid = req.params.postid;
+    res.render("changepost", { postId: postid });
+});
+
 module.exports = router;

@@ -4,14 +4,7 @@ const User = require("../model/User");
 // 게시물 생성 API (POST /post/create)
 exports.createPost = async (req, res) => {
     try {
-        if (!req.session.user) {
-            return res.status(401).json({ message: "로그인이 필요합니다." });
-        }
-
         const user = await User.findById(req.session.user.id);
-        if (!user) {
-            return res.status(400).json({ message: "사용자를 찾을 수 없습니다." });
-        }
 
         const { title, contents, country, classify } = req.body; // 정렬된 텍스트 및 이미지 URL 배열
 
@@ -69,13 +62,29 @@ exports.getPostList = async (req, res) => {
     }
 };
 
+// 게시물 삭제 API (DELETE /post/:id)
+exports.deletePost = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const post = await Post.findById(id);
+        if (!post) {
+            return res.status(404).json({ message: "게시물을 찾을 수 없습니다." });
+        }
+
+        await Post.deleteOne({ _id: id });
+
+        res.json({ message: "게시물이 삭제되었습니다." });
+    } catch (error) {
+        console.error("게시물 삭제 오류:", error);
+        res.status(500).json({ message: "게시물 삭제 실패" });
+    }
+};
+
+
 // 좋아요 추가/취소 API (POST /post/:id/like)
 exports.toggleLike = async (req, res) => {
     try {
-        if (!req.session.user) {
-            return res.status(401).json({ message: "로그인이 필요합니다." });
-        }
-
         const { id } = req.params;
         const userId = req.session.user.id;
 

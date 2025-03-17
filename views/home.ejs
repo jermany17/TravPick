@@ -62,7 +62,7 @@
             if (!response.ok) throw new Error("사용자 정보를 가져올 수 없음");
 
             const result = await response.json();
-            document.getElementById("userName").innerText = result.nickName;
+            document.getElementById("userName").innerText = result.userName;
             document.getElementById("userId").innerText = result.userId;
             document.getElementById("userInfoBox").style.display = "block"; // 사용자 정보 표시
         } catch (error) {
