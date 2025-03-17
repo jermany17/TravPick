@@ -36,7 +36,7 @@
                     const currentPage = window.location.href;
 
                     // 로그아웃하기 직전 경로에 "/countrypage/"가 포함되어 있으면 저장
-                    if (currentPage.includes("/countrypage/")) {
+                    if (currentPage.includes("/countrypage/") || currentPage.includes("/postpage/")) {
                         sessionStorage.setItem("logoutPreviousPage", currentPage);
                     } else {
                         sessionStorage.removeItem("logoutPreviousPage"); // 필요 없으면 삭제
@@ -62,7 +62,7 @@
               // 로그아웃 후 저장된 페이지로 이동 ("/countrypage/" 포함된 경우에만)
             const previousPage = sessionStorage.getItem("logoutPreviousPage");
 
-            if (previousPage && previousPage.includes("/countrypage/")) {
+            if (previousPage && (previousPage.includes("/countrypage/") || previousPage.includes("/postpage/"))) {
                 window.location.href = previousPage; // 로그아웃 직전 경로로 리다이렉트
             } else {
                 window.location.href = "/"; // 기본적으로 홈으로 이동
