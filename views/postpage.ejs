@@ -41,8 +41,13 @@
 
                 // 콘텐츠 추가 (글과 이미지 구분)
                 const contentContainer = document.getElementById("post-content");
+                const imageUrls = []; // 이미지 URL 저장 배열
+
                 post.contents.forEach(content => {
-                    if (content.startsWith("http")) {
+                    if (content.startsWith("https")) {
+                        // 이미지 URL 저장
+                        imageUrls.push(content);
+
                         // 이미지일 경우
                         const imgElement = document.createElement("img");
                         imgElement.src = content;
@@ -60,6 +65,7 @@
                 console.log("postId:", postId);  // 🛠 postId 값 확인
                 console.log("loggedInUserId:", loggedInUserId);  // 🛠 로그인한 사용자 ID 확인
                 console.log("postuserId: ", post.userId.toString());
+
                 // 로그인된 사용자가 게시물의 작성자와 같다면 버튼 표시
                 if (loggedInUserId && loggedInUserId === post.userId.toString()) {
                     document.getElementById("post-buttons").style.display = "flex";
@@ -74,6 +80,22 @@
                 document.getElementById("delete-post").addEventListener("click", async function () {
                     if (confirm("게시물을 삭제하시겠습니까?")) {
                         try {
+                            // 모든 이미지 삭제 요청 보내기
+                            const deleteImageRequests = imageUrls.map(url => {
+                                return fetch(`/s3/delete?fileUrl=${encodeURIComponent(url)}`, {
+                                    method: "DELETE"
+                                });
+                            });
+
+                            // 이미지 삭제 결과 확인
+                            const deleteImageResponses = await Promise.all(deleteImageRequests);
+                            const allDeleted = deleteImageResponses.every(response => response.ok);
+
+                            if (!allDeleted) {
+                                throw new Error("일부 이미지 삭제 실패");
+                            }
+
+                            // 모든 이미지가 삭제된 후, 게시물 삭제 요청
                             const deleteResponse = await fetch(`/post/${postId}`, {
                                 method: "DELETE"
                             });
@@ -83,7 +105,7 @@
                             }
 
                             alert("게시물이 삭제되었습니다.");
-                            window.location.href = "/";
+                            window.location.href = document.referrer;
                         } catch (error) {
                             console.error("삭제 오류:", error);
                             alert("게시물을 삭제하는 데 실패했습니다.");
