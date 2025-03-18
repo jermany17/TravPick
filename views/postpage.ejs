@@ -105,7 +105,7 @@
                             }
 
                             alert("게시물이 삭제되었습니다.");
-                            window.location.href = document.referrer;
+                            window.location.href = `/countrypage/${post.country}/${post.classify}`;
                         } catch (error) {
                             console.error("삭제 오류:", error);
                             alert("게시물을 삭제하는 데 실패했습니다.");

@@ -138,11 +138,7 @@
           });
 
           alert("게시물이 수정되었습니다.");
-          if (document.referrer) {
-            location.href = document.referrer; // 이전 페이지로 이동하면서 새로고침
-          } else {
-            window.location.href = `/post/${postId}`;
-          }
+          window.location.href = `/postpage/${postId}`;
         });
 
         function createControls(element) {
@@ -322,3 +318,4 @@
 
       });
     </script>
+    

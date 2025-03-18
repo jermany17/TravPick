@@ -181,11 +181,7 @@
                         .then(data => {
                             if (data.postId) {
                                 alert("게시물이 등록되었습니다.");
-                                if (document.referrer) {
-                                    location.href = document.referrer; // 이전 페이지로 이동하면서 새로고침
-                                } else {
-                                    window.location.href = `/post/${data.postId}`;
-                                }
+                                window.location.href = `/countrypage/${countryName}/${postType}`;
                             } else {
                                 alert("게시물 등록 실패!");
                                 submitButton.disabled = false;
