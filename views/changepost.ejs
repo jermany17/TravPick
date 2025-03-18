@@ -1,5 +1,324 @@
 <%- include("include/_header") %>
 
-<span>하이!</span>   
+  <main class="addpost-container">
+    <h1 class="addpost-title">게시물 수정</h1>
 
-<%- include("include/_footer") %>
+    <div class="addpost-info">
+      <p><span id="postCountry"></span> | <span id="postClassify"></span></p>
+    </div>
+
+    <!-- 제목 입력 필드 -->
+    <div class="addpost-title-container">
+      <input type="text" id="addpostTitle" class="addpost-title-input" placeholder="제목을 입력하세요">
+    </div>
+
+    <!-- 글과 이미지가 추가되는 컨테이너 -->
+    <div id="addpostElements" class="addpost-elements-container"></div>
+
+    <!-- 글 작성 영역 (항상 표시) -->
+    <div id="addpostTextEditorContainer" class="addpost-text-editor-container">
+      <!-- 글 작성 컨테이너 -->
+      <div class="addpost-textarea-container">
+        <textarea id="addpostTextEditor" class="addpost-textarea" placeholder="여기에 글을 작성하세요."></textarea>
+      </div>
+      <div class="addpost-text-buttons">
+        <input type="file" id="addpostImageUpload" accept="image/*" style="display: none;">
+        <span id="addpostAddImageButton" class="material-symbols-outlined addpost-icon-image">image</span>
+        <span id="addpostConfirmTextButton" class="material-symbols-outlined addpost-icon-text">send</span>
+      </div>
+    </div>
+
+    <button id="updatePostButton" class="addpost-submit-button">수정</button>
+  </main>
+
+  <%- include("include/_footer") %>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", async () => {
+        const postId = "<%= postId %>";
+        const postElements = document.getElementById("addpostElements");
+        const textEditor = document.getElementById("addpostTextEditor");
+        const imageUpload = document.getElementById("addpostImageUpload");
+        const updateButton = document.getElementById("updatePostButton"); // 수정 버튼
+        const titleInput = document.getElementById("addpostTitle");
+        let originalContents = [];
+        let deleteImageRequests = [];
+
+        function updateSubmitButtonState() {
+          const hasText = postElements.querySelector(".addpost-text-wrapper") !== null;
+          const hasImage = postElements.querySelector(".addpost-image-wrapper") !== null;
+          const hasTitle = titleInput.value.trim().length > 0;
+
+          // 제목이 있고, 글 또는 이미지가 하나라도 있으면 활성화
+          updateButton.disabled = !hasTitle || (!hasText && !hasImage);
+        }
+
+        titleInput.addEventListener("input", updateSubmitButtonState);
+
+        try {
+          const response = await fetch(`/post/${postId}`);
+          if (!response.ok) throw new Error("게시물을 불러올 수 없습니다.");
+          const post = await response.json();
+
+          titleInput.value = post.title;
+          document.getElementById("postCountry").innerText = post.country;
+          document.getElementById("postClassify").innerText = post.classify;
+
+          originalContents = [...post.contents];
+
+          post.contents.forEach(content => {
+            if (content.startsWith("https")) {
+              addImageElement(content, true);
+            } else {
+              addTextElement(content);
+            }
+          });
+
+          updateSubmitButtonState();
+        } catch (error) {
+          console.error("게시물 로딩 오류");
+        }
+
+        document.getElementById("addpostAddImageButton").addEventListener("click", () => {
+          imageUpload.click();
+        });
+
+        imageUpload.addEventListener("change", (event) => {
+          const file = event.target.files[0];
+          if (file && file.type.startsWith("image")) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              addImageElement(e.target.result, false, file);
+              updateSubmitButtonState();
+            }
+            reader.readAsDataURL(file);
+          }
+          imageUpload.value = "";
+        });
+
+        document.getElementById("addpostConfirmTextButton").addEventListener("click", () => {
+          const textValue = textEditor.value.trim();
+          if (textValue) {
+            addTextElement(textValue);
+            textEditor.value = "";
+            updateSubmitButtonState();
+          }
+        });
+
+        updateButton.addEventListener("click", async () => {
+          updateSubmitButtonState();
+
+          if (updateButton.disabled) return;
+
+          const title = titleInput.value.trim();
+          const contents = [];
+
+          updateButton.disabled = true;
+          updateButton.innerText = "수정 중..."
+          Array.from(postElements.children).forEach(element => {
+            if (element.classList.contains("addpost-text-wrapper")) {
+              contents.push(element.dataset.text);
+            } else if (element.classList.contains("addpost-image-wrapper")) {
+              contents.push(element.dataset.url);
+            }
+          });
+
+          originalContents.forEach(original => {
+            if (!contents.includes(original) && original.startsWith("https")) {
+              deleteImageRequests.push(fetch(`/s3/delete?fileUrl=${encodeURIComponent(original)}`, { method: "DELETE" }));
+            }
+          });
+
+          await Promise.all(deleteImageRequests);
+
+          await fetch(`/post/${postId}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ title, contents })
+          });
+
+          alert("게시물이 수정되었습니다.");
+          if (document.referrer) {
+            location.href = document.referrer; // 이전 페이지로 이동하면서 새로고침
+          } else {
+            window.location.href = `/post/${postId}`;
+          }
+        });
+
+        function createControls(element) {
+          const controls = document.createElement("div");
+          controls.classList.add("addpost-controls");
+
+          const deleteButton = document.createElement("button");
+          deleteButton.classList.add("addpost-delete-button");
+          deleteButton.innerHTML = `<span class="material-symbols-outlined addpost-icon-control">delete</span>`;
+          deleteButton.addEventListener("click", async () => {
+            if (element.classList.contains("addpost-image-wrapper")) {
+              const imageUrl = element.dataset.url;
+              if (imageUrl.startsWith("https")) {
+                deleteImageRequests.push(fetch(`/s3/delete?fileUrl=${encodeURIComponent(imageUrl)}`, { method: "DELETE" }));
+              }
+            }
+            element.remove();
+            updateSubmitButtonState();
+          });
+
+          const moveUpButton = document.createElement("button");
+          moveUpButton.classList.add("addpost-move-up-button");
+          moveUpButton.innerHTML = `<span class="material-symbols-outlined addpost-icon-control">arrow_upward</span>`;
+          moveUpButton.addEventListener("click", () => {
+            if (element.previousElementSibling) {
+              element.parentNode.insertBefore(element, element.previousElementSibling);
+            }
+          });
+
+          const moveDownButton = document.createElement("button");
+          moveDownButton.classList.add("addpost-move-down-button");
+          moveDownButton.innerHTML = `<span class="material-symbols-outlined addpost-icon-control">arrow_downward</span>`;
+          moveDownButton.addEventListener("click", () => {
+            if (element.nextElementSibling) {
+              element.parentNode.insertBefore(element.nextElementSibling, element);
+            }
+          });
+
+          controls.appendChild(moveUpButton);
+          controls.appendChild(moveDownButton);
+
+          if (!element.classList.contains("addpost-image-wrapper")) {
+            const editButton = document.createElement("button");
+            editButton.classList.add("addpost-edit-button");
+            editButton.dataset.mode = "edit";
+            editButton.innerHTML = `<span class="material-symbols-outlined addpost-icon-control">edit</span>`;
+            editButton.addEventListener("click", () => {
+              if (editButton.dataset.mode === "edit") {
+                enableEditing(element, editButton);
+              } else {
+                saveEditing(element, editButton);
+              }
+            });
+            controls.appendChild(editButton);
+          }
+
+          controls.appendChild(deleteButton);
+          element.appendChild(controls);
+          return controls;
+        }
+
+        function enableEditing(element, editButton) {
+          const textContent = element.querySelector(".addpost-text-content");
+
+          if (!textContent) {
+            console.error("텍스트 요소를 찾을 수 없습니다.");
+            return;
+          }
+
+          const textarea = document.createElement("textarea");
+          textarea.classList.add("addpost-edit-textarea");
+          textarea.value = textContent.innerText;
+
+          element.dataset.originalText = textContent.innerText; // 기존 텍스트 저장
+          textContent.replaceWith(textarea);
+
+          element.style.backgroundColor = "#e6f7ff"; // 수정 모드 배경색 변경
+          editButton.innerHTML = `<span class="material-symbols-outlined addpost-icon-control">save</span>`;
+          editButton.dataset.mode = "save"; // 상태 변경
+
+          textarea.addEventListener("input", () => {
+            editButton.disabled = textarea.value.trim().length === 0;
+          });
+
+          editButton.disabled = textarea.value.trim().length === 0;
+        }
+
+        function saveEditing(element, editButton) {
+          const textarea = element.querySelector(".addpost-edit-textarea");
+
+          if (!textarea) {
+            console.error("수정할 textarea를 찾을 수 없습니다.");
+            return;
+          }
+
+          const textValue = textarea.value.trim();
+
+          if (textValue.length === 0) {
+            alert("내용을 입력해주세요.");
+            return;
+          }
+
+          const textContent = document.createElement("div");
+          textContent.classList.add("addpost-text-content");
+          textContent.innerText = textValue;
+
+          element.dataset.text = textValue; // 새로운 값 저장
+          textarea.replaceWith(textContent);
+
+          element.style.backgroundColor = ""; // 원래 색으로 복귀
+          editButton.innerHTML = `<span class="material-symbols-outlined addpost-icon-control">edit</span>`;
+          editButton.dataset.mode = "edit"; // 상태 변경
+          editButton.disabled = false;
+
+          updateSubmitButtonState();
+        }
+
+
+        function addTextElement(text) {
+          const textWrapper = document.createElement("div");
+          textWrapper.classList.add("addpost-element", "addpost-text-wrapper");
+          textWrapper.dataset.text = text;
+
+          const textContent = document.createElement("div");
+          textContent.classList.add("addpost-text-content");
+          textContent.innerText = text;
+
+          textWrapper.appendChild(textContent);
+          textWrapper.appendChild(createControls(textWrapper));
+
+          postElements.appendChild(textWrapper);
+
+          updateSubmitButtonState();
+        }
+
+        function addImageElement(url, isUploaded, file = null) {
+          const imgWrapper = document.createElement("div");
+          imgWrapper.classList.add("addpost-element", "addpost-image-wrapper");
+
+          const img = document.createElement("img");
+          img.src = url;
+          img.classList.add("addpost-image");
+
+          // 기존 게시물에서 가져온 경우
+          if (isUploaded) {
+            imgWrapper.dataset.url = url; // S3 URL 저장
+          }
+          // 새로 업로드한 경우 → S3에 업로드 후 URL을 받아야 함
+          else {
+            const formData = new FormData();
+            formData.append("file", file);
+
+            fetch("/s3/upload", {
+              method: "POST",
+              body: formData
+            })
+              .then(response => response.json())
+              .then(data => {
+                if (!data.imageUrl) {
+                  throw new Error("이미지 업로드 실패");
+                }
+                imgWrapper.dataset.url = data.imageUrl; // S3 URL 저장
+              })
+              .catch(error => {
+                console.error("이미지 업로드 실패");
+                alert("이미지 업로드 실패");
+                imgWrapper.remove(); // 업로드 실패 시 요소 삭제
+              });
+          }
+
+          imgWrapper.appendChild(img);
+          imgWrapper.appendChild(createControls(imgWrapper));
+          postElements.appendChild(imgWrapper);
+
+          updateSubmitButtonState();
+        }
+
+      });
+    </script>

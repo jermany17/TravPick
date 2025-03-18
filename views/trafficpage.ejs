@@ -131,7 +131,7 @@
                         contentText.className = "countrypage-post-content-preview";
 
                         // 첫 번째 텍스트 찾기 (이미지가 아닌 것)
-                        const firstText = post.contents.find(line => !line.startsWith("https")) || "내용 없음";
+                        const firstText = post.contents.find(line => !line.startsWith("https")) || "내용";
 
                         // 50자 이상이면 '...' 추가
                         const maxLength = 50;

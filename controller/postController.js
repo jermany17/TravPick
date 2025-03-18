@@ -81,6 +81,29 @@ exports.deletePost = async (req, res) => {
     }
 };
 
+// 게시물 수정 API (PATCH /post/:id)
+exports.updatePost = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { title, contents } = req.body;
+
+        const post = await Post.findById(id);
+        if (!post) {
+            return res.status(404).json({ message: "게시물을 찾을 수 없습니다." });
+        }
+
+        post.title = title;
+        post.contents = contents;
+        post.updateAt = Date.now();
+
+        await post.save();
+
+        res.json({ message: "게시물이 수정되었습니다." });
+    } catch (error) {
+        console.error("게시물 수정 오류:", error);
+        res.status(500).json({ message: "게시물 수정 실패" });
+    }
+};
 
 // 좋아요 추가/취소 API (POST /post/:id/like)
 exports.toggleLike = async (req, res) => {
