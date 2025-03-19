@@ -9,7 +9,7 @@
         <span class="material-symbols-outlined">account_circle</span>
 
         <!-- 이름/닉네임 입력 -->
-        <input type="text" id="nickName" class="signup-input" placeholder="이름 혹은 닉네임">
+        <input type="text" id="userName" class="signup-input" placeholder="이름 혹은 닉네임">
 
         <!-- 아이디 입력 & 중복 확인 -->
         <div class="signup-input-group">
@@ -105,7 +105,7 @@
 
     // 회원가입 요청
     async function signup() {
-        const nickName = document.getElementById("nickName").value;
+        const userName = document.getElementById("userName").value;
         const userId = document.getElementById("userId").value;
         const userPassword = document.getElementById("userPassword").value;
 
@@ -115,13 +115,14 @@
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ nickName, userId, userPassword })
+                body: JSON.stringify({ userName, userId, userPassword })
             });
 
             const result = await response.json();
 
             if (response.ok) {
-                window.location.href = "/signuppage2"; // 회원가입 성공 시 화면 이동
+                alert("회원가입이 완료되었습니다.");
+                window.location.href = "/loginpage"; // 회원가입 성공 시 화면 이동
             } else {
                 alert(result.message); // 회원가입 실패
             }

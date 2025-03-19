@@ -121,3 +121,46 @@
   right: 8%;
   bottom: 20px;
 }
+
+/* 좋아요 컨테이너 */
+.like-container {
+  position: absolute;
+  top: 20px;
+}
+
+/* 좋아요 버튼 (둥근 배경 + 아이콘 + 개수) */
+.like-button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background-color: white;
+  border-radius: 30px;
+  padding: 6px 12px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* 좋아요 아이콘 기본 상태 */
+#like-icon {
+  font-size: 20px !important;
+  color: pink;
+  transition: color 0.3s ease;
+  margin-bottom: 0px;;
+}
+
+/* 좋아요 개수 */
+#like-count {
+  font-size: 15px;
+  font-weight: bold;
+  color: black;
+}
+
+/* 좋아요가 눌린 상태 */
+.like-button.liked {
+  background-color: white;
+}
+
+.like-button.liked #like-icon {
+  color: red; /* 좋아요가 눌린 상태에서는 빨간색 */
+}
