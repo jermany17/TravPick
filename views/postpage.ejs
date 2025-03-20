@@ -160,7 +160,7 @@
                     // 좋아요 버튼 클릭 이벤트
                     likeButton.addEventListener("click", async function () {
                         try {
-                            const toggleResponse = await fetch(`/post/${postId}/like`, {
+                            const toggleResponse = await fetch(`/post/${postId}/${loggedInUserId}/like`, {
                                 method: "POST"
                             });
 

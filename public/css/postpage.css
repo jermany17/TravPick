@@ -158,7 +158,7 @@
 
 /* 좋아요가 눌린 상태 */
 .like-button.liked {
-  background-color: white;
+  background-color: rgb(248, 226, 226);
 }
 
 .like-button.liked #like-icon {

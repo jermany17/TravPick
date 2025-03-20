@@ -109,7 +109,7 @@ exports.updatePost = async (req, res) => {
 exports.toggleLike = async (req, res) => {
     try {
         const { id } = req.params;
-        const userId = req.session.user.id;
+        const { userName } = req.params;
 
         const post = await Post.findById(id);
         if (!post) {
@@ -117,11 +117,11 @@ exports.toggleLike = async (req, res) => {
         }
 
         // 좋아요 상태 확인
-        const likeIndex = post.likes.indexOf(userId);
+        const likeIndex = post.likes.indexOf(userName);
 
         if (likeIndex === -1) {
             // 좋아요 추가
-            post.likes.push(userId);
+            post.likes.push(userName);
         } else {
             // 좋아요 취소
             post.likes.splice(likeIndex, 1);
