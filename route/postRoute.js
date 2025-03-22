@@ -7,8 +7,8 @@ const router = express.Router();
 router.post("/post/create", authMiddleware, createPost); // 게시물 생성
 router.get("/post/list", getPostList); // 최신순 게시물 목록 조회
 router.get("/post/list/likes", getPostListByLikes); // 좋아요 순 게시물 목록 조회
-
 router.get("/post/:id", getPost); // 게시물 단일 조회
+
 router.delete("/post/:id", authMiddleware, deletePost); // 게시물 삭제
 router.patch("/post/:id", authMiddleware, updatePost); // 게시물 수정
 
