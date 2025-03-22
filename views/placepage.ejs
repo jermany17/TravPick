@@ -140,7 +140,7 @@
                         // 국가 및 분류 정보 + 날짜 함께 표시
                         const meta = document.createElement("p");
                         meta.className = "countrypage-post-meta";
-                        meta.innerText = `${post.country} | ${post.classify} | ${new Date(post.createAt).toLocaleDateString()} | `;
+                        meta.innerText = `${post.country} | ${post.classify} | ${new Date(post.createAt).toLocaleDateString()}`;
 
                         // 좋아요 영역
                         const likeWrapper = document.createElement("span");
@@ -243,3 +243,4 @@
                 }
             });
         </script>
+        
