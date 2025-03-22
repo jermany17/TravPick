@@ -30,30 +30,30 @@ exports.createPost = async (req, res) => {
 
 // 게시물 단일 조회 API (GET /post/:id)
 exports.getPost = async (req, res) => {
-  try {
-      const { id } = req.params;
-      const post = await Post.findById(id);
+    try {
+        const { id } = req.params;
+        const post = await Post.findById(id);
 
-      if (!post) {
-          return res.status(404).json({ message: "게시물을 찾을 수 없습니다." });
-      }
+        if (!post) {
+            return res.status(404).json({ message: "게시물을 찾을 수 없습니다." });
+        }
 
-      res.json(post);
+        res.json(post);
     } catch (error) {
-      console.error("게시물 조회 오류:", error);
-      res.status(500).json({ message: "게시물 조회 실패" });
+        console.error("게시물 조회 오류:", error);
+        res.status(500).json({ message: "게시물 조회 실패" });
     }
 };
 
 // 게시물 목록 조회 API (GET /post/list)
 exports.getPostList = async (req, res) => {
-  try {
+    try {
         const { country, classify } = req.query;
         const filter = {};
-            
+
         if (country) filter.country = country;
         if (classify) filter.classify = classify;
-        
+
         const posts = await Post.find(filter).sort({ createAt: -1 }).lean(); // 최신순 정렬
         res.json(posts);
     } catch (error) {
@@ -150,5 +150,32 @@ exports.getLikeCount = async (req, res) => {
     } catch (error) {
         console.error("좋아요 개수 조회 오류:", error);
         res.status(500).json({ message: "좋아요 개수 조회 실패" });
+    }
+};
+
+// 좋아요 개수 순으로 게시물 목록 조회 API (GET /post/list/likes)
+exports.getPostListByLikes = async (req, res) => {
+    try {
+        const { country, classify } = req.query;
+        const filter = {};
+
+        if (country) filter.country = country;
+        if (classify) filter.classify = classify;
+
+        const posts = await Post.find(filter).lean();
+
+        // 1순위: 좋아요 수, 2순위: 최신순
+        posts.sort((a, b) => {
+            const likeDiff = (b.likes?.length || 0) - (a.likes?.length || 0);
+            if (likeDiff !== 0) return likeDiff;
+
+            // 날짜 비교 (최근 날짜가 앞으로 오게)
+            return new Date(b.createAt) - new Date(a.createAt);
+        });
+
+        res.json(posts);
+    } catch (error) {
+        console.error("좋아요 수 기준 게시물 목록 조회 오류:", error);
+        res.status(500).json({ message: "게시물 목록 조회 실패" });
     }
 };

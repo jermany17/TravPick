@@ -246,7 +246,7 @@
 }
 
 #postCount {
-  font-size: 20px;
+  font-size: 16px;
   text-align: left; /* 텍스트 왼쪽 정렬 */
   margin-left: 15px; /* 왼쪽 여백 제거 */
 }
@@ -269,4 +269,32 @@
   color: black;
   font-size: 14px;
   font-weight: 500;
+}
+
+.countrypage-array {
+  width: 80%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: normal;
+  color: #a5a8eb;
+}
+
+.countrypage-array a {
+  text-decoration: none;
+  color: #a5a8eb;
+  font-weight: normal;
+  transition: color 0.3s ease;
+}
+
+.countrypage-array a.active {
+  font-weight: bold;
+  border-bottom: 2px solid #7a7ed1;
+  color: #7a7ed1;
+}
+
+.countrypage-array a:hover {
+  color: #7a7ed1;
 }

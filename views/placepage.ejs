@@ -9,6 +9,13 @@
             <p> 가볼 만한 곳 정보를 공유하려면 로그인하세요!</p>
         </div>
 
+        <!-- 정렬 탭 -->
+        <div class="countrypage-array">
+            <a href="#" id="sortLatest" class="active">최신 글</a>
+            <span>|</span>
+            <a href="#" id="sortPopular">인기 글</a>
+        </div>
+
         <!-- 게시물 리스트 -->
         <section class="countrypage-post-list">
             <h2 id="postCount">전체 글 (0)</h2>
@@ -79,10 +86,34 @@
             const classify = "<%= encodeURIComponent('가볼 만한 곳') %>";
             let currentPage = 1;
             const postsPerPage = 5;
+            let currentSort = "latest"; // 기본은 최신순
+
+            document.getElementById("sortLatest").addEventListener("click", () => {
+                currentSort = "latest";
+                currentPage = 1;
+                updateSortTabUI();
+                fetchPosts(currentPage);
+            });
+
+            document.getElementById("sortPopular").addEventListener("click", () => {
+                currentSort = "popular";
+                currentPage = 1;
+                updateSortTabUI();
+                fetchPosts(currentPage);
+            });
+
+            function updateSortTabUI() {
+                document.getElementById("sortLatest").classList.toggle("active", currentSort === "latest");
+                document.getElementById("sortPopular").classList.toggle("active", currentSort === "popular");
+            }
 
             async function fetchPosts(page) {
                 try {
-                    const response = await fetch(`/post/list?country=${country}&classify=${classify}`);
+                    const baseURL = currentSort === "popular"
+                        ? `/post/list/likes`
+                        : `/post/list`;
+
+                    const response = await fetch(`${baseURL}?country=${country}&classify=${classify}`);
                     const posts = await response.json();
                     const postContainer = document.getElementById("postContainer");
                     const postCount = document.getElementById("postCount");
@@ -243,4 +274,3 @@
                 }
             });
         </script>
-        
