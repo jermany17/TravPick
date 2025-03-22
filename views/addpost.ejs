@@ -5,7 +5,7 @@
 
         <div class="addpost-info">
             <p>
-                <%= countryName %> | <%= postType %>
+                <%= countryName %> | <%- postType %>
             </p>
         </div>
 
@@ -44,7 +44,7 @@
                 const titleInput = document.getElementById("addpostTitle");
 
                 const countryName = "<%= countryName %>";
-                const postType = "<%= postType %>";
+                const postType = "<%- postType %>";
 
                 // 제출 버튼 상태 업데이트 (글 또는 이미지가 있어야 활성화)
                 function updateSubmitButtonState() {
@@ -304,4 +304,3 @@
                 }
             });
         </script>
-        
