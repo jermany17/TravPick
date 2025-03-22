@@ -250,3 +250,23 @@
   text-align: left; /* 텍스트 왼쪽 정렬 */
   margin-left: 15px; /* 왼쪽 여백 제거 */
 }
+
+.countrypage-like-wrapper {
+  margin-left: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.countrypage-like-icon {
+  color: red;
+  font-size: 15px !important;
+  vertical-align: middle;
+  margin: 0px;
+}
+
+.countrypage-like-count {
+  color: black;
+  font-size: 15px;
+  font-weight: 500;
+}

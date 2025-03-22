@@ -140,7 +140,35 @@
                         // 국가 및 분류 정보 + 날짜 함께 표시
                         const meta = document.createElement("p");
                         meta.className = "countrypage-post-meta";
-                        meta.innerText = `${post.country} | ${post.classify} | ${new Date(post.createAt).toLocaleDateString()}`;
+                        meta.innerText = `${post.country} | ${post.classify} | ${new Date(post.createAt).toLocaleDateString()} | `;
+
+                        // 좋아요 영역
+                        const likeWrapper = document.createElement("span");
+                        likeWrapper.className = "countrypage-like-wrapper";
+
+                        // 좋아요 아이콘
+                        const likeIcon = document.createElement("span");
+                        likeIcon.className = "material-symbols-outlined countrypage-like-icon";
+                        likeIcon.innerText = "favorite";
+
+                        // 좋아요 개수
+                        const likeCount = document.createElement("span");
+                        likeCount.className = "countrypage-like-count";
+                        likeCount.innerText = "0";
+
+                        // API 호출로 좋아요 개수 가져오기
+                        fetch(`/post/${post._id}/like`)
+                            .then(res => res.json())
+                            .then(data => {
+                                likeCount.innerText = data.likeCount;
+                            })
+                            .catch(err => {
+                                console.error("좋아요 개수 불러오기 실패:", err);
+                            });
+
+                        likeWrapper.appendChild(likeIcon);
+                        likeWrapper.appendChild(likeCount);
+                        titleContainer.appendChild(likeWrapper);
 
                         postText.appendChild(titleContainer);
                         postText.appendChild(contentText); // 제목 아래 내용 추가
@@ -207,4 +235,11 @@
 
             fetchPosts(currentPage);
             checkLoginStatus();
+
+            // 뒤로가기 또는 브라우저 복원 시 새로고침
+            window.addEventListener("pageshow", function (event) {
+                if (event.persisted || window.performance.getEntriesByType("navigation")[0]?.type === "back_forward") {
+                    fetchPosts(currentPage); // 게시물 다시 불러오기
+                }
+            });
         </script>
