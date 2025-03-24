@@ -23,6 +23,19 @@
 
         <!-- 본문 내용 (이미지 & 글) -->
         <div id="post-content" class="postpage-content"></div>
+
+        <!-- 댓글 -->
+        <div class="postpage-comments-container">
+            <h3 class="postpage-comments-title">전체 댓글(<span id="comment-count">0</span>)</h3>
+            <div id="comment-list" class="postpage-comments-list"></div>
+
+            <% if (loggedInUserId) { %>
+                <div class="postpage-comments-inputbox">
+                    <textarea id="comment-input" placeholder="내용을 입력하세요."></textarea>
+                    <button id="comment-submit" disabled>등록</button>
+                </div>
+                <% } %>
+        </div>
     </div>
 
     <script>
@@ -193,6 +206,108 @@
             } catch (error) {
                 console.error("좋아요 데이터 로드 오류:", error);
             }
+        });
+
+        document.addEventListener("DOMContentLoaded", async function () {
+            const postId = "<%= postId.toString() %>";
+            const loggedInUserId = "<%= loggedInUserId ? loggedInUserId.toString() : '' %>";
+
+            const commentList = document.getElementById("comment-list");
+            const commentCount = document.getElementById("comment-count");
+            const commentInput = document.getElementById("comment-input");
+            const commentSubmit = document.getElementById("comment-submit");
+
+            // 댓글 표시 함수
+            function renderComments(comments) {
+                commentList.innerHTML = ""; // 기존 댓글 초기화
+                commentCount.textContent = comments.length;
+
+                comments.forEach(comment => {
+                    const commentElement = document.createElement("div");
+                    commentElement.className = "postpage-comments-item";
+
+                    const isOwner = comment.userId === loggedInUserId;
+
+                    commentElement.innerHTML = `
+                          <p class="postpage-comments-username">${comment.userName}</p>
+                          <p class="postpage-comments-contents">${comment.contents}</p>
+                          <p class="postpage-comments-date">
+                                ${formatDateTime(comment.createAt)}
+                                ${isOwner ? `<button class="comment-delete-button" data-id="${comment._id}">삭제</button>` : ""}
+                          </p>
+                    `;
+
+                    commentList.appendChild(commentElement);
+                });
+
+                // 삭제 버튼 이벤트 바인딩
+                document.querySelectorAll(".comment-delete-button").forEach(btn => {
+                    btn.addEventListener("click", async function () {
+                        const commentId = this.getAttribute("data-id");
+                        if (!confirm("댓글을 삭제하시겠습니까?")) return;
+
+                        try {
+                            const res = await fetch(`/post/${postId}/comment/${commentId}`, {
+                                method: "DELETE"
+                            });
+
+                            if (!res.ok) {
+                                throw new Error("댓글 삭제 실패");
+                            }
+
+                            // 삭제 후 댓글 다시 불러오기
+                            const updatedPost = await (await fetch(`/post/${postId}`)).json();
+                            renderComments(updatedPost.comments);
+                        } catch (err) {
+                            console.error("댓글 삭제 오류:", err);
+                        }
+                    });
+                });
+            }
+
+            // 댓글 가져오기
+            try {
+                const res = await fetch(`/post/${postId}`);
+                const postData = await res.json();
+                renderComments(postData.comments);
+            } catch (err) {
+                console.error("댓글 불러오기 실패", err);
+            }
+
+            // 입력값 감지하여 버튼 활성화
+            commentInput.addEventListener("input", () => {
+                commentSubmit.disabled = commentInput.value.trim().length === 0;
+            });
+
+            // 댓글 등록
+            commentSubmit.addEventListener("click", async () => {
+                const contents = commentInput.value.trim();
+                if (!contents) return;
+
+                try {
+                    const res = await fetch(`/post/${postId}/comment`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ contents })
+                    });
+
+                    if (!res.ok) {
+                        throw new Error("댓글 등록 실패");
+                    }
+
+                    const result = await res.json();
+
+                    // 새 댓글 추가 후 다시 불러오기
+                    const postRes = await fetch(`/post/${postId}`);
+                    const postData = await postRes.json();
+                    renderComments(postData.comments);
+
+                    commentInput.value = "";
+                    commentSubmit.disabled = true;
+                } catch (error) {
+                    console.error("댓글 등록 에러:", error);
+                }
+            });
         });
     </script>
 
