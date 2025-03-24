@@ -5,6 +5,17 @@
             <%= countryName %>
         </h1>
 
+           <!-- 카테고리 탭 -->
+           <div class="countrypage-category">
+            <a href="/countrypage/<%= countryName %>/가볼 만한 곳" class="<%= category === '가볼 만한 곳' ? 'active' : '' %>">가볼
+                만한 곳</a>
+            <span>|</span>
+            <a href="/countrypage/<%= countryName %>/식당 & 카페" class="<%= category === '식당 & 카페' ? 'active' : '' %>">식당 &
+                카페</a>
+            <span>|</span>
+            <a href="/countrypage/<%= countryName %>/교통" class="<%= category === '교통' ? 'active' : '' %>">교통</a>
+        </div>
+        
         <div id="countryMessage" class="countrypage-content">
             <p>식당 & 카페 정보를 공유하려면 로그인하세요!</p>
         </div>

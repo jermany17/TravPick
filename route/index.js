@@ -36,11 +36,11 @@ router.get('/countrypage/:country/:category', (req, res) => {
     const category = decodeURIComponent(req.params.category); // 디코딩 처리
     
     if (category === "가볼 만한 곳") {
-        res.render('placepage', { countryName });
+        res.render('placepage', { countryName, category });
     } else if (category === "식당 & 카페") {
-        res.render('restaurantpage', { countryName });
+        res.render('restaurantpage', { countryName, category });
     } else if (category === "교통") {
-        res.render('trafficpage', { countryName });
+        res.render('trafficpage', { countryName, category });
     } else {
         res.status(404).send("페이지를 찾을 수 없습니다.");
     }

@@ -298,3 +298,36 @@
 .countrypage-array a:hover {
   color: #7a7ed1;
 }
+
+/* 카테고리 탭 컨테이너 */
+.countrypage-category {
+  width: 80%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  font-size: 17px;
+  font-weight: normal;
+  color: #a5a8eb;
+  margin-top: -20px;
+}
+
+/* 카테고리 탭 각각의 링크 */
+.countrypage-category a {
+  text-decoration: none;
+  color: #a5a8eb;
+  font-weight: normal;
+  transition: color 0.3s ease, border-bottom 0.3s ease;
+}
+
+/* 선택된 카테고리에 스타일 적용 */
+.countrypage-category a.active {
+  font-weight: bold;
+  border-bottom: 2px solid #7a7ed1;
+  color: #7a7ed1;
+}
+
+/* hover 효과 */
+.countrypage-category a:hover {
+  color: #7a7ed1;
+}
