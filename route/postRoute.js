@@ -1,5 +1,5 @@
 const express = require("express");
-const { createPost, getPost, getPostList, getPostListByLikes, deletePost, toggleLike, getLikeCount, updatePost } = require("../controller/postController");
+const { createPost, getPost, getPostList, getPostListByLikes, deletePost, toggleLike, getLikeCount, updatePost, addComment, deleteComment } = require("../controller/postController");
 const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
@@ -14,5 +14,8 @@ router.patch("/post/:id", authMiddleware, updatePost); // 게시물 수정
 
 router.post("/post/:id/:userName/like", authMiddleware, toggleLike); // 게시물 좋아요 추가/취소
 router.get("/post/:id/like", getLikeCount); // 좋아요 개수 조회
+
+router.post("/post/:id/comment", authMiddleware, addComment); // 댓글 작성
+router.delete("/post/:postId/comment/:commentId", authMiddleware, deleteComment); // 댓글 삭제
 
 module.exports = router;

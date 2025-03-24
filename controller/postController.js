@@ -179,3 +179,70 @@ exports.getPostListByLikes = async (req, res) => {
         res.status(500).json({ message: "게시물 목록 조회 실패" });
     }
 };
+
+// 댓글 작성 API (POST /post/:id/comment)
+exports.addComment = async (req, res) => {
+    try {
+        const { id } = req.params; // 게시물 ID
+        const { contents } = req.body;
+        const user = await User.findById(req.session.user.id);
+
+        if (!contents || contents.trim() === "") {
+            return res.status(400).json({ message: "댓글 내용을 입력해주세요." });
+        }
+
+        const post = await Post.findById(id);
+        if (!post) {
+            return res.status(404).json({ message: "게시물을 찾을 수 없습니다." });
+        }
+
+        const newComment = {
+            userId: user.userId,
+            userName: user.userName,
+            contents,
+            createAt: new Date()
+        };
+
+        post.comments.push(newComment);
+        await post.save();
+
+        // 새로 추가된 댓글 (_id 포함)을 응답으로 보냄
+        const createdComment = post.comments[post.comments.length - 1];
+
+        res.status(201).json({ message: "댓글 작성 완료", comment: createdComment });
+    } catch (error) {
+        console.error("댓글 작성 오류:", error);
+        res.status(500).json({ message: "댓글 작성 실패" });
+    }
+};
+
+// 댓글 삭제 API (DELETE /post/:postId/comment/:commentId)
+exports.deleteComment = async (req, res) => {
+    try {
+        const { postId, commentId } = req.params;
+        const user = await User.findById(req.session.user.id);
+
+        const post = await Post.findById(postId);
+        if (!post) {
+            return res.status(404).json({ message: "게시물을 찾을 수 없습니다." });
+        }
+
+        const comment = post.comments.id(commentId);
+
+        if (!comment) {
+            return res.status(404).json({ message: "댓글을 찾을 수 없습니다." });
+        }
+
+        if (comment.userId !== user.userId) {
+            return res.status(403).json({ message: "댓글 삭제 권한이 없습니다." });
+        }
+
+        comment.deleteOne(); // 해당 댓글 삭제
+        await post.save();
+
+        res.json({ message: "댓글이 삭제되었습니다." });
+    } catch (error) {
+        console.error("댓글 삭제 오류:", error);
+        res.status(500).json({ message: "댓글 삭제 실패" });
+    }
+};
