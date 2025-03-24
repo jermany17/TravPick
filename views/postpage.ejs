@@ -3,6 +3,12 @@
     <div class="postpage-container">
         <!-- 헤더 섹션 (타이틀, 작성자, 메타 정보) -->
         <div class="postpage-header">
+            <!-- 게시물 목록으로 돌아가기 -->
+            <div class="postpage-return">
+                <a id="post-back-link" href="#">
+                <span class="material-symbols-outlined">arrow_back</span>게시물 목록</a>
+            </div>
+
             <!-- 좋아요 버튼 추가 -->
             <div class="like-container">
                 <div id="like-button" class="like-button">
@@ -64,6 +70,9 @@
 
                 // 제목 및 작성자 설정
                 document.getElementById("post-title").innerHTML = `${post.title} <span class="postpage-author">by ${post.userName}</span>`;
+
+                document.getElementById("post-back-link").href =
+                    `/countrypage/${encodeURIComponent(post.country)}/${encodeURIComponent(post.classify)}`;
 
                 // 메타 데이터 설정
                 document.getElementById("post-meta").innerHTML = `

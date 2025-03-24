@@ -274,3 +274,30 @@
 .comment-delete-button:hover {
   color: #ec1919;
 }
+
+/* 게시물 목록으로 돌아가기 링크 */
+.postpage-return {
+  width: 100%;
+  padding-top: 20px;
+  font-size: 14px;
+}
+
+.postpage-return a {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+  transition: color 0.3s ease, text-decoration 0.3s ease;
+}
+
+.postpage-return a:hover {
+  color: white;
+  text-decoration: underline;
+}
+
+.postpage-return .material-symbols-outlined {
+  font-size: 18px !important;      /* 아이콘 크기 */
+  color: white;        /* 아이콘 색상 */
+  vertical-align: middle; /* 텍스트와 정렬 맞추기 */
+  margin-right: 5px;     /* 텍스트와 아이콘 간격 */
+  margin-bottom: 3px;
+}
