@@ -271,6 +271,20 @@
   font-weight: 500;
 }
 
+.countrypage-comment-icon {
+  font-size: 14px !important;
+  color: #555;
+  vertical-align: middle;
+  margin: 0px;
+}
+
+/* 댓글 개수 숫자 */
+.countrypage-comment-count {
+  font-size: 14px;
+  color: black;
+  font-weight: 500;
+}
+
 .countrypage-array {
   width: 80%;
   display: flex;

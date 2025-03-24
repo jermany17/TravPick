@@ -184,7 +184,7 @@
                         meta.className = "countrypage-post-meta";
                         meta.innerText = `${post.country} | ${post.classify} | ${new Date(post.createAt).toLocaleDateString()}`;
 
-                        // 좋아요 영역
+                        // 좋아요 영역 + 댓글 영역 래퍼
                         const likeWrapper = document.createElement("span");
                         likeWrapper.className = "countrypage-like-wrapper";
 
@@ -198,6 +198,16 @@
                         likeCount.className = "countrypage-like-count";
                         likeCount.innerText = "0";
 
+                        // 댓글 아이콘
+                        const commentIcon = document.createElement("span");
+                        commentIcon.className = "material-symbols-outlined countrypage-comment-icon";
+                        commentIcon.innerText = "comment";
+
+                        // 댓글 개수
+                        const commentCount = document.createElement("span");
+                        commentCount.className = "countrypage-comment-count";
+                        commentCount.innerText = post.comments?.length ?? 0;
+
                         // API 호출로 좋아요 개수 가져오기
                         fetch(`/post/${post._id}/like`)
                             .then(res => res.json())
@@ -210,6 +220,8 @@
 
                         likeWrapper.appendChild(likeIcon);
                         likeWrapper.appendChild(likeCount);
+                        likeWrapper.appendChild(commentIcon);
+                        likeWrapper.appendChild(commentCount);
                         titleContainer.appendChild(likeWrapper);
 
                         postText.appendChild(titleContainer);
