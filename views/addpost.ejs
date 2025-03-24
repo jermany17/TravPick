@@ -30,7 +30,7 @@
             </div>
         </div>
 
-        <button id="addpostSubmitPostButton" class="addpost-submit-button">제출</button>
+        <button id="addpostSubmitPostButton" class="addpost-submit-button">등록</button>
     </main>
 
     <%- include("include/_footer") %>
@@ -110,6 +110,11 @@
                     if (submitButton.disabled) return;
 
                     const title = titleInput.value.trim();
+
+                    if (title.length > 20) {
+                        alert("제목은 20자를 넘길 수 없습니다.");
+                        return;
+                    }
 
                     if (postElements.children.length === 0 || title.length === 0) {
                         alert("제목과 내용을 입력해주세요.");
