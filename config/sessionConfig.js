@@ -9,7 +9,7 @@ const sessionMiddleware = session({
     cookie: {
         httpOnly: true,  // JavaScript로 접근 불가
         secure: true,   // HTTPS 환경에서는 true(로컬에서는 false)
-        sameSite: "none", // CORS 허용(로컬에서는 "Lax")
+        sameSite: "None", // CORS 허용(로컬에서는 "Lax")
     },
 });
 
