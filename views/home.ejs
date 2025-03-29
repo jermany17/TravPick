@@ -115,7 +115,7 @@
         polygonTemplate.events.on("hit", function(ev) {
             let countryName = ev.target.dataItem.dataContext.name;
             let encodedCountryName = encodeURIComponent(countryName); // URL 인코딩
-            window.location.href = `/countrypage/${encodedCountryName}`;
+            window.location.href = `/countrypage/${encodedCountryName}/가볼 만한 곳`;
         });
     });
   </script>
