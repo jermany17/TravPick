@@ -62,6 +62,20 @@ exports.getPostList = async (req, res) => {
     }
 };
 
+// 내가 쓴 게시물 조회 API (GET /post/my/posts)
+exports.getMyPosts = async (req, res) => {
+    try {
+        const user = await User.findById(req.session.user.id);
+
+        const myPosts = await Post.find({ userId: user.userId }).sort({ createAt: -1 }).lean();
+
+        res.json(myPosts);
+    } catch (error) {
+        console.error("내 게시물 조회 오류:", error);
+        res.status(500).json({ message: "내 게시물 조회 실패" });
+    }
+};
+
 // 게시물 삭제 API (DELETE /post/:id)
 exports.deletePost = async (req, res) => {
     try {
