@@ -64,4 +64,8 @@ router.get("/changepost/:postid", (req, res) => { // 게시물
     res.render("changepost", { postId: postid });
 });
 
+router.get("/mypostpage", (req, res) => { // 내 게시물
+    res.render("mypostpage");
+});
+
 module.exports = router;
