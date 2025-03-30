@@ -1,0 +1,205 @@
+<%- include("include/_header") %>
+
+    <main class="countrypage-container">
+        <h1 class="countrypage-title">내 게시물</h1>
+
+        <!-- 정렬 탭 -->
+        <div class="countrypage-array">
+            <a href="#" id="sortLatest" class="active">최신 글</a>
+            <span>|</span>
+            <a href="#" id="sortPopular">인기 글</a>
+        </div>
+
+        <!-- 게시물 리스트 -->
+        <section class="countrypage-post-list">
+            <h2 id="postCount">전체 글 (0)</h2>
+            <div id="postContainer"></div>
+        </section>
+
+        <!-- 페이지네이션 -->
+        <div class="countrypage-pagination">
+            <a href="#" id="prevPage">«</a>
+            <span id="pageNumbers"></span>
+            <a href="#" id="nextPage">»</a>
+        </div>
+    </main>
+
+    <%- include("include/_footer") %>
+
+        <script>
+            let currentPage = 1;
+            const postsPerPage = 5;
+            let currentSort = "latest";
+
+            document.getElementById("sortLatest").addEventListener("click", () => {
+                currentSort = "latest";
+                currentPage = 1;
+                updateSortTabUI();
+                fetchMyPosts(currentPage);
+            });
+
+            document.getElementById("sortPopular").addEventListener("click", () => {
+                currentSort = "popular";
+                currentPage = 1;
+                updateSortTabUI();
+                fetchMyPosts(currentPage);
+            });
+
+            function updateSortTabUI() {
+                document.getElementById("sortLatest").classList.toggle("active", currentSort === "latest");
+                document.getElementById("sortPopular").classList.toggle("active", currentSort === "popular");
+            }
+
+            async function fetchMyPosts(page) {
+                try {
+                    const response = await fetch("/post/my/posts");
+                    const posts = await response.json();
+                    const postContainer = document.getElementById("postContainer");
+                    const postCount = document.getElementById("postCount");
+                    postContainer.innerHTML = "";
+
+                    if (!posts || posts.length === 0) {
+                        postCount.innerText = "전체 글 (0)";
+                        postContainer.innerHTML = "<p>게시물이 없습니다.</p>";
+                        return;
+                    }
+
+                    // 정렬
+                    if (currentSort === "popular") {
+                        posts.sort((a, b) => (b.likes?.length ?? 0) - (a.likes?.length ?? 0));
+                    } else {
+                        posts.sort((a, b) => new Date(b.createAt) - new Date(a.createAt));
+                    }
+
+                    postCount.innerText = `전체 글 (${posts.length})`;
+
+                    const startIndex = (page - 1) * postsPerPage;
+                    const endIndex = startIndex + postsPerPage;
+                    const paginatedPosts = posts.slice(startIndex, endIndex);
+
+                    paginatedPosts.forEach(post => {
+                        const postElement = document.createElement("div");
+                        postElement.className = "countrypage-post-item";
+
+                        const postText = document.createElement("div");
+                        postText.className = "countrypage-post-text";
+
+                        const title = document.createElement("a");
+                        title.href = `/postpage/${post._id}`;
+                        title.className = "countrypage-post-title";
+                        title.innerText = post.title;
+
+                        const userNameSpan = document.createElement("span");
+                        userNameSpan.className = "countrypage-post-user";
+                        userNameSpan.innerText = ` by ${post.userName}`;
+
+                        const titleContainer = document.createElement("div");
+                        titleContainer.className = "countrypage-post-title-container";
+                        titleContainer.appendChild(title);
+                        titleContainer.appendChild(userNameSpan);
+
+                        const contentText = document.createElement("p");
+                        contentText.className = "countrypage-post-content-preview";
+                        const firstText = post.contents.find(line => !line.startsWith("https")) || "";
+                        contentText.innerText = firstText.length > 50 ? firstText.substring(0, 50) + "..." : firstText;
+
+                        const meta = document.createElement("p");
+                        meta.className = "countrypage-post-meta";
+                        meta.innerText = `${post.country} | ${post.classify} | ${new Date(post.createAt).toLocaleDateString()}`;
+
+                        const likeWrapper = document.createElement("span");
+                        likeWrapper.className = "countrypage-like-wrapper";
+
+                        const likeIcon = document.createElement("span");
+                        likeIcon.className = "material-symbols-outlined countrypage-like-icon";
+                        likeIcon.innerText = "favorite";
+
+                        const likeCount = document.createElement("span");
+                        likeCount.className = "countrypage-like-count";
+                        likeCount.innerText = post.likes?.length ?? 0;
+
+                        const commentIcon = document.createElement("span");
+                        commentIcon.className = "material-symbols-outlined countrypage-comment-icon";
+                        commentIcon.innerText = "comment";
+
+                        const commentCount = document.createElement("span");
+                        commentCount.className = "countrypage-comment-count";
+                        commentCount.innerText = post.comments?.length ?? 0;
+
+                        likeWrapper.appendChild(likeIcon);
+                        likeWrapper.appendChild(likeCount);
+                        likeWrapper.appendChild(commentIcon);
+                        likeWrapper.appendChild(commentCount);
+                        titleContainer.appendChild(likeWrapper);
+
+                        postText.appendChild(titleContainer);
+                        postText.appendChild(contentText);
+                        postText.appendChild(meta);
+
+                        const postImage = document.createElement("div");
+                        postImage.className = "countrypage-post-image";
+
+                        if (post.contents.some(line => line.startsWith("https"))) {
+                            const img = document.createElement("img");
+                            img.src = post.contents.find(line => line.startsWith("https"));
+                            img.alt = "게시물 이미지";
+                            postImage.appendChild(img);
+                        } else {
+                            postImage.classList.add("no-image");
+                            postImage.innerText = "사진 없음";
+                        }
+
+                        postElement.appendChild(postText);
+                        postElement.appendChild(postImage);
+                        postContainer.appendChild(postElement);
+                    });
+
+                    updatePagination(posts.length, page);
+                } catch (error) {
+                    console.error("내 게시물 불러오기 오류:", error);
+                }
+            }
+
+            function updatePagination(totalPosts, currentPage) {
+                const totalPages = Math.ceil(totalPosts / postsPerPage);
+                const pageNumbers = document.getElementById("pageNumbers");
+                pageNumbers.innerHTML = "";
+
+                for (let i = 1; i <= totalPages; i++) {
+                    const pageLink = document.createElement("a");
+                    pageLink.href = "#";
+                    pageLink.innerText = i;
+                    pageLink.className = currentPage === i ? "active" : "";
+                    pageLink.addEventListener("click", () => {
+                        currentPage = i;
+                        fetchMyPosts(currentPage);
+                    });
+                    pageNumbers.appendChild(pageLink);
+                }
+
+                document.getElementById("prevPage").style.visibility = currentPage > 1 ? "visible" : "hidden";
+                document.getElementById("nextPage").style.visibility = currentPage < totalPages ? "visible" : "hidden";
+            }
+
+            document.getElementById("prevPage").addEventListener("click", () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    fetchMyPosts(currentPage);
+                }
+            });
+
+            document.getElementById("nextPage").addEventListener("click", () => {
+                currentPage++;
+                fetchMyPosts(currentPage);
+            });
+
+            fetchMyPosts(currentPage);
+
+            // 뒤로가기 또는 브라우저 복원 시 새로고침
+            window.addEventListener("pageshow", function (event) {
+                if (event.persisted || window.performance.getEntriesByType("navigation")[0]?.type === "back_forward") {
+                    fetchMyPosts(currentPage); // 게시물 다시 불러오기
+                }
+            });
+        </script>
+        
