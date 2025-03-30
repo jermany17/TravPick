@@ -85,6 +85,28 @@
 
                         // countryMessage에 버튼 추가
                         countryMessage.appendChild(addPostButton);
+
+                        // 내 게시물 버튼도 동적으로 추가
+                        const myPostWrapper = document.createElement("div");
+                        myPostWrapper.className = "countrypage-mypostpage-wrapper";
+
+                        const myPostButton = document.createElement("a");
+                        myPostButton.href = "/mypostpage";
+                        myPostButton.className = "countrypage-mypostpage";
+
+                        const myPostIcon = document.createElement("span");
+                        myPostIcon.className = "material-symbols-outlined";
+                        myPostIcon.innerText = "menu";
+
+                        const myPostText = document.createTextNode("내 게시물");
+
+                        myPostButton.appendChild(myPostIcon);
+                        myPostButton.appendChild(myPostText);
+                        myPostWrapper.appendChild(myPostButton);
+
+                        const categoryTab = document.querySelector(".countrypage-category");
+                        categoryTab.parentNode.insertBefore(myPostWrapper, categoryTab); // 카테고리 위에 삽입
+
                     } else {
                         // 로그아웃된 경우 → 기본 문구 유지
                         countryMessage.innerHTML = "<p>가볼 만한 곳 정보를 공유하려면 로그인하세요!</p>";

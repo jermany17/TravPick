@@ -345,3 +345,39 @@
 .countrypage-category a:hover {
   color: #7a7ed1;
 }
+
+/* 내 게시물 버튼 래퍼: 오른쪽 정렬 */
+.countrypage-mypostpage-wrapper {
+  width: 80%;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -10px;
+}
+
+/* 내 게시물 버튼 자체 */
+.countrypage-mypostpage {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 17px;
+  color: #a5a8eb;
+  text-decoration: none;
+  transition: color 0.3s ease, font-weight 0.3s ease;
+}
+
+/* 아이콘 스타일 */
+.countrypage-mypostpage .material-symbols-outlined {
+  font-size: 17px !important;
+  transition: color 0.3s ease;
+  margin: 0px;
+}
+
+/* hover 효과 */
+.countrypage-mypostpage:hover {
+  color: #7a7ed1;
+  font-weight: bold;
+}
+
+.countrypage-mypostpage:hover .material-symbols-outlined {
+  color: #7a7ed1;
+}
