@@ -8,8 +8,8 @@ const sessionMiddleware = session({
     saveUninitialized: false, // 데이터가 없는 세션을 저장하지 않음
     cookie: {
         httpOnly: true,  // JavaScript로 접근 불가
-        secure: false,   // HTTPS 환경에서는 true(로컬에서는 false)
-        sameSite: "Lax", // CORS 허용(로컬에서는 "Lax")
+        secure: true,   // HTTPS 환경에서는 true(로컬에서는 false)
+        sameSite: "None", // CORS 허용(로컬에서는 "Lax")
     },
 });
 
